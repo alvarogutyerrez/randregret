@@ -1,0 +1,10 @@
+v 1
+p randregret Random Regret Minimization Models using Stata
+* Author: Álvaro A. Gutiérrez Vargas. ORSTAT, KU Leuven. 
+* Support: alvaro.gutierrezvargas@kuleuven.be
+
+* Author:Michel Meulders. ORSTAT, KU Leuven. 
+* Support: michel.meulders@kuleuven.be
+
+* Author: Martina Vandebroek. ORSTAT, KU Leuven. 
+* Support: martina.vandebroek@kuleuven.be
