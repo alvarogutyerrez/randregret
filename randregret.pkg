@@ -1,0 +1,29 @@
+v 1
+
+d 'randregret': Random Regret Minimization Models using Stata
+d
+d randregret implement a variety of Random Regret Minimization 
+d models. It also offer 
+d  a) Robust Standard Errors
+d  b) Cluster Robust Standard Errors 
+d
+d KW: random regret minimization
+d KW: discrete choice models
+d KW: logit
+d KW: semi-compensatory behavior
+d
+d Requires: Stata version 12.0
+d
+d Author: Álvaro A. Gutiérrez Vargas. ORSTAT, KU Leuven. 
+d Support: alvaro.gutierrezvargas@kuleuven.be
+
+d Author: Michel Meulders. ORSTAT, KU Leuven. 
+d Support: michel.meulders@kuleuven.be
+
+d Author: Martina Vandebroek. ORSTAT, KU Leuven. 
+d Support: martina.vandebroek@kuleuven.be
+d
+d Distribution-Date: 20200831
+d
+f randregret.ado
+f randregret.sthlp
