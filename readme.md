@@ -1,4 +1,4 @@
-# randregret: A command for fitting random regret minimization models using Stata 
+# ```randregret```: A command for fitting random regret minimization models using Stata 
 
 ```
 *! randregret 1.0.0 26Oct2020
@@ -25,11 +25,16 @@ Here we describe the ```randregret``` command, which implements a variety of Ran
 ```keywords```: randregret, randregret_pure, randregretpred, discrete choice models,  semi-compensatory behavior, random utility maximization, random regret minimization.
 
 
-# Instalation 
+# Install ```randregret``` 
 
 ``` 
+*Describe randregret
+net describe randregret, from("https://raw.githubusercontent.com/alvarogutyerrez/randregret/master/src/")
 
 
+*Install randregret
+cap ado uninstall randregret
+net install randregret, from("https://raw.githubusercontent.com/alvarogutyerrez/randregret/master/src/")
 ```
 
 
