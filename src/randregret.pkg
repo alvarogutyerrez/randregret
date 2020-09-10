@@ -1,29 +1,46 @@
 v 1
 
-d 'randregret': Random Regret Minimization Models using Stata
+d randregret: Random Regret Minimization Models using Stata
 d
-d randregret implement a variety of Random Regret Minimization 
-d models. It also offer 
-d  a) Robust Standard Errors
-d  b) Cluster Robust Standard Errors 
+d randregret implements a variety of Random Regret Minimization (RRM)
+d The command allows the user to apply the classic RRM model introduced in 
+d Chorus (2010, European Journal of Transport and Infrastructure Research 
+d 10: 181-196), the Generalized RRM model introduced in Chorus (2014, 
+d Transportation Research Part B: Methodological 68: 224-238), and also the 
+d muRRM and Pure RRM models, both introduced in van Cranenburgh (2015, 
+d Transportation Research Part A: Policy and Practice_ 74: 91-109). We 
+d illustrate the usage of the randregret command using stated choice data 
+d on route preferences. The command offers robust and cluster standard error
+d  correction using analytical expressions of the scores functions. 
+d It also offers likelihood ratio tests that can be used to assess the 
+d relevance of a given model specification. 
+d Finally, users can obtain the predicted probabilities from each model 
+d using the randregretpred command.
+d
 d
 d KW: random regret minimization
 d KW: discrete choice models
-d KW: logit
 d KW: semi-compensatory behavior
 d
 d Requires: Stata version 12.0
 d
 d Author: Álvaro A. Gutiérrez Vargas. ORSTAT, KU Leuven. 
 d Support: alvaro.gutierrezvargas@kuleuven.be
-
+d
 d Author: Michel Meulders. ORSTAT, KU Leuven. 
 d Support: michel.meulders@kuleuven.be
-
+d
 d Author: Martina Vandebroek. ORSTAT, KU Leuven. 
 d Support: martina.vandebroek@kuleuven.be
 d
 d Distribution-Date: 20200831
 d
 f randregret.ado
-*f randregret.sthlp
+f randregret.sthlp
+f randregretpred.ado
+f randregretpred.sthlp
+f randregret_pure.ado
+f randregret_pure.sthlp
+f randregret_LL.mata
+
+
