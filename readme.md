@@ -48,9 +48,11 @@ clear all
 set more off
 capture log close 
 
+// randregret instalation 
 cap ado uninstall randregret
 net install randregret, from("https://raw.githubusercontent.com/alvarogutyerrez/randregret/master/src/")
 
+// Data download
 scalar server = "https://data.4tu.nl/ndownloader/"
 scalar doi = "files/24015353"
 import delimited   "`=server + doi'" ,clear
@@ -66,10 +68,7 @@ label define  alt_label 1 "First" 2 "Second" 3 "Third"
 label values  altern alt_label
 list obs altern choice id cs tt tc   in 1/12, sepby(obs)
 
-
-
 // Different Regret Models:
-
 // Classic RRM+ cluster(id)
 randregret choice  tc tt , gr(obs) alt(altern) rrmfn(classic)  cluster(id)	nocons
 
@@ -81,8 +80,6 @@ randregret choice  tc tt , gr(obs) alt(altern) rrmfn(gene) cluster(id) show noco
 
 // Pure RRM + cluster(id)
 randregret choice  , neg(tc tt) gr(obs) alt(altern) rrmfn(pure) cluster(id) nocons     
-
-
 ```
 
 
