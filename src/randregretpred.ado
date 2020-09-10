@@ -40,7 +40,8 @@ program define randregretpred, eclass
 
 			mata: st_view(X = ., ., "`prefix'*") 	
 			
-			tempname ASC_hat b_hat
+			tempname ASC_hat b_hat b_all
+			matrix `b_all' = e(b)
 			// (2) Dealing with ASC (if specified)	
 			if "`e(ASC)'"=="YES" {
 				// Generate ASC as tempvars
@@ -64,9 +65,9 @@ program define randregretpred, eclass
 				// Dummy ASC
 				mata: st_view(ASC = ., ., "`ASC_'*")
 				// Coefficients ASC
-				matrix `ASC_hat' = e(b)[1,`e(rank)'-(`n_altern'-2)..`e(rank)']				
+				matrix `ASC_hat' = `b_all'[1,`e(rank)'-(`n_altern' - 2)..`e(rank)']				
 				// Coefficients RRM part
-				matrix `b_hat' = e(b)[1,1..`e(rank)'-`n_altern'+1]
+				matrix `b_hat' = `b_all'[1,1..`e(rank)'-`n_altern'+1]
 				}
 			else{ 
 				// Dummy ASC (=0 for conformability)
@@ -74,7 +75,7 @@ program define randregretpred, eclass
 				// Coefficients ASC
 				matrix `ASC_hat' =J(1,1,0)
 				// Coefficients RRM part
-				matrix `b_hat' = e(b)
+				matrix `b_hat' = `b_all'
 			}		
 			// Mata allocation of estimates
 			mata: b_hat= st_matrix("`b_hat'")
