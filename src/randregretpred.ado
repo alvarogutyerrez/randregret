@@ -40,6 +40,7 @@ program define randregretpred, eclass
 
 			mata: st_view(X = ., ., "`prefix'*") 	
 			
+			tempname ASC_hat b_hat
 			// (2) Dealing with ASC (if specified)	
 			if "`e(ASC)'"=="YES" {
 				// Generate ASC as tempvars
@@ -62,8 +63,6 @@ program define randregretpred, eclass
 				}
 				// Dummy ASC
 				mata: st_view(ASC = ., ., "`ASC_'*")
-				tempname ASC_hat b_hat
-				
 				// Coefficients ASC
 				matrix `ASC_hat' = e(b)[1,`e(rank)'-(`n_altern'-2)..`e(rank)']				
 				// Coefficients RRM part
