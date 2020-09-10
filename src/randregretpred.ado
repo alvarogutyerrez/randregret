@@ -42,44 +42,52 @@ program define randregretpred, eclass
 			
 			// (2) Dealing with ASC (if specified)	
 			if "`e(ASC)'"=="YES" {
-				tempvar ASC
-				qui tab `alternatives' ,gen(`ASC')
+				// Generate ASC as tempvars
+				qui levelsof `alternatives', local(levels_altern)
+				// tailored made ASC variables
+				tempvar ASC_
+				foreach i of local levels_altern {
+					tempvar ASC_`i'
+					qui gen `ASC_'`i' = (`alternatives' == `i')
+				}				
+				qui tab `alternatives' 
 				local n_altern = r(r) 
 				if "`e(basealternative)'"!=""{
-					drop `ASC'`e(basealternative)'
-						}
+					drop `ASC_'`e(basealternative)'
+				}
 				else{ //drop the alternative with lower number
-					qui sum  `alternatives' , meanonly 
-					local min_alt = r(min)
-					drop `ASC'`min_alt'
+						qui sum  `alternatives' , meanonly 
+						local min_alt = r(min)
+						qui drop `ASC_'`min_alt'
 				}
 				// Dummy ASC
-				mata: st_view(ASC = ., ., "`ASC'*")
+				mata: st_view(ASC = ., ., "`ASC_'*")
+				tempname ASC_hat b_hat
+				
 				// Coefficients ASC
-				matrix ASC_hat = e(b)[1,`e(rank)'-(`n_altern'-2)..`e(rank)']				
+				matrix `ASC_hat' = e(b)[1,`e(rank)'-(`n_altern'-2)..`e(rank)']				
 				// Coefficients RRM part
-				matrix b_hat = e(b)[1,1..`e(rank)'-`n_altern'+1]
+				matrix `b_hat' = e(b)[1,1..`e(rank)'-`n_altern'+1]
 				}
 			else{ 
 				// Dummy ASC (=0 for conformability)
 				mata: ASC = J(1,1,0) 	
 				// Coefficients ASC
-				matrix ASC_hat =J(1,1,0)
+				matrix `ASC_hat' =J(1,1,0)
 				// Coefficients RRM part
-				matrix b_hat = e(b)
+				matrix `b_hat' = e(b)
 			}		
-			*restore
+			// Mata allocation of estimates
+			mata: b_hat= st_matrix("`b_hat'")
+			mata: ASC_hat= st_matrix("`ASC_hat'")
 			// Predicted Probability Computations
 			mata: prediction= pbb_pred(X , ASC, panvar) 
-
 			qui gen	 `varlist' = .	
 			mata: empty_view = .
 			mata: st_view(empty_view, ., "`varlist'")
 			mata: empty_view[.,.] =prediction[.,.]		
 			qui replace `varlist' =. if e(sample)  != 1 
 			qui replace `varlist' =. if   `touse' !=1 
-			qui drop `prefix'*
-			if "`e(ASC)'"=="YES" drop `ASC'*
 		
 		}
 		else if ("`e(rrmfn)'"!="pure") {
@@ -91,44 +99,79 @@ program define randregretpred, eclass
 			
 			// Mata allocation of the regressors.
 			mata: st_view(X = ., ., "`covars'") 	
-
-		if "`e(ASC)'"=="YES" {
-			tempvar ASC
-			qui tab `alternatives' ,gen(`ASC')
-			local n_altern = r(r) 
-			if "`e(basealternative)'"!=""{
-				drop `ASC'`e(basealternative)'
+			
+			// Parsing parameter vector
+			tempname b_all b_hat ASC_hat b_hat aux_star_hat 	
+			matrix `b_all' = e(b)
+			if "${cons_demanded}" =="NO"{ 
+				if ("`e(rrmfn)'" == "classic") {
+					matrix `b_hat' = `b_all' 	
+				} 
+				else if ("`e(rrmfn)'" == "gene") | ("`e(rrmfn)'" == "mu") {
+					matrix `b_hat' = `b_all'[1,1..`e(rank)'-1]
+				}
 			}
-			else{ //drop the alternative with lower number
-				qui sum  `alternatives' , meanonly 
-				local min_alt = r(min)
-				qui drop `ASC'`min_alt'
+			else if "${cons_demanded}" =="YES"{
+				qui tab `alternatives' 
+				local n_altern = r(r) 
+				if ("`e(rrmfn)'"== "classic") {
+					matrix `b_hat' 	 = `b_all'[1,1..(`e(rank)'-`n_altern')+1] 		 
+					matrix `ASC_hat' = `b_all'[1,`e(rank)'-(`n_altern'-2)..`e(rank)']
+				}
+				else if ("`e(rrmfn)'" == "gene") | ("`e(rrmfn)'" == "mu") {
+					matrix `b_hat' 	 = `b_all'[1,1..(`e(rank)'-`n_altern')] 		 
+					matrix `ASC_hat' = `b_all'[1,`e(rank)'-(`n_altern'-1)..`e(rank)'-1]    
+				}
 			}
 			
-		mata: st_view(ASC = ., ., "`ASC'*") 		
-		matrix ASC_hat=  e(b)[1, "ASC:"]	
-		}
-		else{ 
-			// Dummy ASC (=0 for conformability)
-			mata: ASC = J(1,1,0) 	
-			// Coefficients ASC
-			matrix ASC_hat =J(1,1,0)
-		}		
-		// Regret function parameters		
-		matrix b_hat = e(b)[1, "RRM:"]
-		// Ancillary parameter 
-		matrix mu_hat    =J(1,1,1)
-		matrix gamma_hat =J(1,1,1)
-		if ("`e(rrmfn)'"=="mu") {
-			matrix mu_hat =  e(mu)
+
+			// generate ASC if needed
+			if "`e(ASC)'"=="YES" {
+				// Generate ASC as tempvars
+				qui levelsof `alternatives', local(levels_altern)
+				// tailored made ASC variables
+				tempvar ASC_
+				foreach i of local levels_altern {
+					tempvar ASC_`i'
+					qui gen `ASC_'`i' = (`alternatives' == `i')
+				}				
+				qui tab `alternatives' 
+				local n_altern = r(r) 
+				if "`e(basealternative)'"!=""{
+					drop `ASC_'`e(basealternative)'
+				}
+				else{ //drop the alternative with lower number
+						qui sum  `alternatives' , meanonly 
+						local min_alt = r(min)
+						qui drop `ASC_'`min_alt'
+				}
+				// Mata allocation of the ASC variables
+				mata: st_view(ASC = ., ., "`ASC_'*") 		
+			}
+			else{ 
+				// Dummy ASC (=0 for conformability)
+				mata: ASC = J(1,1,0) 	
+				// Coefficients ASC
+				matrix `ASC_hat' =J(1,1,0)
+			}				
+			// Ancillary parameter 			
+			tempname mu_hat gamma_hat
+			matrix `mu_hat'    =J(1,1,1)
+			matrix `gamma_hat' =J(1,1,1)
+			if ("`e(rrmfn)'"=="mu") {
+				matrix `mu_hat' =  e(mu)
 		}
 		else if ("`e(rrmfn)'"=="gene")  {
-			matrix gamma_hat = e(gamma)
-		}		
+			matrix `gamma_hat' = e(gamma)
+		}
+		
+		mata: b_hat= st_matrix("`b_hat'")
+		mata: ASC_hat= st_matrix("`ASC_hat'")
+		mata: gamma_hat= st_matrix("`gamma_hat'")
+		mata: mu_hat= st_matrix("`mu_hat'")
+		
 		// Predicted Probability Computations
 		mata: prediction= pbb_pred(X , ASC, panvar) 
-
-		if "`e(ASC)'"=="YES" qui drop `ASC'*
 
 		qui gen double	`varlist' = .	
 		mata: empty_view = .
@@ -138,4 +181,7 @@ program define randregretpred, eclass
 		qui replace `varlist' =. if   `touse' !=1 
 		}	
 		
+
+		
 end
+

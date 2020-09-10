@@ -138,16 +138,15 @@ end
 mata:
 real matrix pbb_pred(real matrix X,real matrix ASC, real colvector panvar )
 {
-	b_hat  		= st_matrix("b_hat")
- 	mu_hat 		= st_matrix("mu_hat")
-	gamma_hat	= st_matrix("gamma_hat")	
 		
-	ASC_hat  	= st_matrix("ASC_hat") 
+	external b_hat
+	external ASC_hat 
+	external mu_hat
+	external gamma_hat
+		
 	ASC_option 	= st_global("e(ASC)") 
-
 	rrmfn 		= st_global("e(rrmfn)") 	
 	proba		= st_local("proba") 
-
 	paninfo = panelsetup(panvar, 1) 
 	npanels = panelstats(paninfo)[1]
 	
@@ -189,9 +188,6 @@ real matrix pbb_pred(real matrix X,real matrix ASC, real colvector panvar )
 	else return(regret_hat)	
 }
 end
-
-
-
 
 //  Analytical Gradients utilities
 
