@@ -717,7 +717,7 @@ program define _lrtest_gene, sclass
 end
 
 // include mata functions from randregret_LL.mata
-findfile "randregret_LL.mata"
+findfile "randregret.mata"
 capture do "`r(fn)'"
 
 exit
