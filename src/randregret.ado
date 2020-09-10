@@ -274,7 +274,6 @@ if "`rrmfn'" == "pure" {
 		qui clogit `lhs' `old_covars' 		  if `touse' ,group(`group') ///
 											from(`from') `robust' `vce_cluster'
 	}
-		
 	restore		
 	
 	if "${cons_demanded}" =="YES"{
@@ -316,7 +315,6 @@ if "`rrmfn'" == "pure" {
 	ereturn scalar p =  r(p)
 	ereturn scalar df_m = r(df)
 	
-	
 	ereturn local title "PRRM: Pure Random Regret Minimization Model"	
 	ereturn local  rrmfn  "`rrmfn'"
 	ereturn local positive "`positive'"
@@ -324,8 +322,6 @@ if "`rrmfn'" == "pure" {
 	ereturn local basealternative  "`basealternative'"
 	ereturn local ASC  "${cons_demanded}"
 	ereturn local cmd "randregret"
-	
-	
 	
 	Header
 	randregret 
@@ -410,8 +406,6 @@ else if  "`rrmfn'" == "gene" {
 		exit 198
 	}
 		
-	
-	
 	// ML equations		
 	local RR_log = "(RRM: `lhs' = `rhs', nocons)"
 	local RR_gamma = "(gamma_star:   )"
@@ -507,14 +501,11 @@ else if  "`rrmfn'" == "gene" {
 				title(`title') 						///
 				maximize
 
-	// Utilities for robust/cluster standard errors.
-	tempname b_all ASC_hat b_hat mu_star_hat gamma_star_hat D
+
+				
+	// vector of estimates				
+	tempname b_all 
 	matrix `b_all' = e(b)
-	
-	capture mat `ASC_hat' = e(b)[1,"ASC:"]
-	mata: ASC_hat = st_matrix("`ASC_hat'")
-	
-	
 	// replace tempvar names of ASC for meaningfull names
 	if "${cons_demanded}" =="YES"{ 
 		local names : colnames `b_all'
@@ -531,28 +522,46 @@ else if  "`rrmfn'" == "gene" {
 			matrix colnames `b_all' = `newnames'
 		}
 	}
-	
-	
-	// Utilities for cluster/robust
-	capture mat `b_hat' = e(b)[1,"RRM:"]
-	mata: b_hat = st_matrix("`b_hat'")
-	
-	capture mat `mu_star_hat'= e(b)[1,"mu_star:"]
-	mata: mu_star_hat = st_matrix("`mu_star_hat'")
-	
-	capture mat `gamma_star_hat'= e(b)[1,"gamma_star:"]
-	mata: gamma_star_hat = st_matrix("`gamma_star_hat'")
-	
-	matrix `D' = e(V)	
-	mata: D = st_matrix("`D'")
-	mata: st_view(Y= ., ., "`lhs'", "`touse'" )
-	mata: st_view(X = ., ., "`rhs'", "`touse'") 			
-	capture mata: st_view(ASC = ., ., "`ASC_'*", "`touse'") 		
-	mata: st_view(panvar=., ., "`group'", "`touse'")
-
-
+	// Utilities for robust/cluster standard errors.
 	if ("`cluster'" != "") | ("`robust'" !=""){
-		tempname  V_r	
+		tempname ASC_hat b_hat aux_star_hat 		
+		// Parsing parameter vector
+		if "${cons_demanded}" =="NO"{ 
+			if ("`rrmfn'" == "classic") {
+				matrix `b_hat' = `b_all' 	
+			} 
+			else if ("`rrmfn'" == "gene") | ("`rrmfn'" == "mu") {
+				matrix `b_hat' = `b_all'[1,1..`e(rank)'-1]
+				matrix `aux_star_hat' = `b_all'[1,`e(rank)'..`e(rank)']
+			}
+		}
+		else if "${cons_demanded}" =="YES"{
+			qui tab `alternatives' 
+			local n_altern = r(r) 
+			if ("`rrmfn'" == "classic") {
+				matrix `b_hat' 	 = `b_all'[1,1..(`e(rank)'-`n_altern')+1] 		 
+				matrix `ASC_hat' = `b_all'[1,`e(rank)'-(`n_altern'-2)..`e(rank)']
+			}
+			else if ("`rrmfn'" == "gene") | ("`rrmfn'" == "mu") {
+				matrix `b_hat' 	 = `b_all'[1,1..(`e(rank)'-`n_altern')] 		 
+				matrix `ASC_hat' = `b_all'[1,`e(rank)'-(`n_altern'-1)..`e(rank)'-1]    
+				matrix `aux_star_hat' = `b_all'[1,`e(rank)'..`e(rank)']
+			}
+		}
+		tempname D
+		matrix `D' = e(V)	
+		mata: D = st_matrix("`D'")		
+		mata: ASC_hat = st_matrix("`ASC_hat'")
+		mata: b_hat = st_matrix("`b_hat'")
+		mata: gamma_star_hat = st_matrix("`aux_star_hat'")
+		mata: mu_star_hat = st_matrix("`aux_star_hat'")
+	
+		mata: st_view(Y= ., ., "`lhs'", "`touse'" )
+		mata: st_view(X = ., ., "`rhs'", "`touse'") 			
+		capture mata: st_view(ASC = ., ., "`ASC_'*", "`touse'") 		
+		mata: st_view(panvar=., ., "`group'", "`touse'")
+
+		tempname V_r	
 		mata: st_matrix("`V_r'", std_errs(D,Y,X,ASC,panvar))
 		ereturn repost b=`b_all' V=`V_r',  rename
 		ereturn local vcetype Robust
@@ -561,6 +570,7 @@ else if  "`rrmfn'" == "gene" {
 	else{
 		ereturn repost b=`b_all' ,  rename
 	}
+
 	
 	tempname fitted_model
 	qui estimate store `fitted_model'
@@ -607,7 +617,6 @@ else if  "`rrmfn'" == "gene" {
 	ereturn scalar n_cases = __n_cases
 	Header
 	Replay , level(`level')
-
 	/*randregretpred utilities */
 	ereturn local basealternative  "`basealternative'"
 	ereturn local ASC  "${cons_demanded}"
