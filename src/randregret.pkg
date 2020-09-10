@@ -41,6 +41,6 @@ f randregretpred.ado
 f randregretpred.sthlp
 f randregret_pure.ado
 f randregret_pure.sthlp
-f randregret_LL.mata
+f randregret.mata
 
 
