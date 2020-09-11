@@ -1,0 +1,393 @@
+{smcl}
+{com}{sf}{ul off}{txt}
+{com}. do test
+{txt}
+{com}. about
+
+{txt}Stata/MP 16.0 for Windows (64-bit x86-64)
+Revision 23 Aug 2019
+Copyright 1985-2019 StataCorp LLC
+
+Total physical memory:     {res}  64.00 GB
+{txt}Available physical memory: {res}  14.73 GB
+
+Single-user 4-core Stata perpetual license:
+       Serial number:  501606271320
+         Licensed to:  Álvaro A. Gutiérrez Vargas
+                       Research Centre for Operations Research and Statistics
+{txt}
+{com}. 
+. 
+. do secondtest
+{txt}
+{com}. cscript "stub of test script"
+{txt}{hline 54}BEGIN stub of test script
+
+{com}. display "to be filled in"
+{res}to be filled in
+{txt}
+{com}. 
+. 
+. clear all
+{res}{txt}
+{com}. set more off
+{txt}
+{com}. which randregret
+{txt}d:\users\u0133260\ado\plus\r\randregret.ado
+{res}*! randregret 1.0.0 26Oct2020
+*! author aagv
+{txt}
+{com}. which randregret_pure
+{txt}d:\users\u0133260\ado\plus\r\randregret_pure.ado
+{res}*! randregret 1.0.0 26Oct2020
+*! author aagv
+{txt}
+{com}. 
+. *Simulated data to recover parameters  
+. 
+. *RRM Models:
+. 
+. * classic       = 2 attributes 
+. 
+. * gene          = 2 attributes + gamma 
+. 
+. 
+. * mu            = 2 attributes + mu  
+. 
+. * pure          = 2 (pure)attributes  
+. 
+. 
+. global n_obs = 5000
+{txt}
+{com}. global n_rep = 100
+{txt}
+{com}. 
+. 
+. mata:
+{txt}{hline 49} mata (type {cmd:end} to exit) {hline}
+{com}: void data_gen() 
+> {c -(}
+>                 st_view(X = ., ., "x*")
+>                 st_view(panvar = ., ., "id") 
+>                 betas  = st_matrix("betas_st")
+>                 gamma  = strtoreal(st_global("real_gamma")) 
+>                 mu         = strtoreal(st_global("real_mu")) 
+>                 
+>                 
+>                 pure_model         = st_global("pure_model") 
+>                 
+>                 
+>                 paninfo = panelsetup(panvar, 1)     
+>         npanels = panelstats(paninfo)[1] 
+>                 
+>                 for(n=1; n <= npanels; ++n) {c -(} 
+>             x_n = panelsubmatrix(X, n, paninfo) 
+>                         if (pure_model =="YES"){c -(}
+>                                 regret_n = betas:* x_n   
+>                         {c )-} 
+>                         else{c -(}
+>                                 regret_n =RRM_log_sim_data(x_n, betas, mu, gamma)  
+>                         {c )-} 
+>                         regret_sum =rowsum(regret_n) 
+>                         R_exp = exp(-regret_sum)
+>                         p_i =   R_exp :/ colsum(R_exp)
+>                                 
+>                         cum_p_i =runningsum(p_i)        
+>                         rand_draws = J(rows(x_n),1,uniform(1,1)) 
+>                         pbb_balance = rand_draws:<cum_p_i
+>                         cum_pbb_balance = runningsum(pbb_balance)
+>                         choice_n = (cum_pbb_balance:== J(rows(x_n),1,1))
+> 
+>                 if (n==1)     Y =choice_n       
+>                 else Y=Y \ choice_n     
+>                 {c )-}
+> resindex = st_addvar("byte","choice")
+> st_store((1,rows(Y)),resindex,Y)                
+> {c )-}
+
+: end
+{txt}{hline}
+
+{com}. 
+. 
+. mata:
+{txt}{hline 49} mata (type {cmd:end} to exit) {hline}
+{com}: function RRM_log_sim_data(      real matrix x_n, 
+>                                                         real rowvector betas,
+>                                                         real scalar mu,
+>                                                         real scalar gamma)
+> {c -(}
+> real scalar i, j ,r_m
+> real matrix regret_n 
+> regret_n = J(rows(x_n), cols(x_n), 0)
+> for(i=1; i <= rows(x_n); ++i) {c -(} 
+>         for(j=1; j <= rows(x_n); ++j) {c -(} 
+>                 if (i!=j) {c -(} 
+>                         r_i = ln(gamma :+ exp( (betas :/ mu) :* ( x_n[j , . ] :-  x_n[i, . ])))                                 
+>                         regret_n[i, . ] = regret_n[i, . ] :+ mu*r_i             
+>                         {c )-} 
+>                 {c )-}         
+>         {c )-}
+> return(regret_n)
+> {c )-}
+{txt}note: variable r_m unused
+
+{com}: end
+{txt}{hline}
+
+{com}. 
+. //------------------------------//
+. //-----Simulate classic RRM-----//
+. //------------------------------//
+. capture program drop sim_classicRRM
+{txt}
+{com}. program define sim_classicRRM, rclass   
+{txt}  1{com}.     version 12
+{txt}  2{com}.         drop _all
+{txt}  3{com}.         set obs ${c -(}n_obs{c )-}
+{txt}  4{com}.         gen id = _n
+{txt}  5{com}.         local n_choices =3
+{txt}  6{com}.         expand `n_choices'
+{txt}  7{com}.         bys id : gen alternative = _n
+{txt}  8{com}.         gen x1 =  runiform(-2,2)
+{txt}  9{com}.         gen x2 =  runiform(-2,2)
+{txt} 10{com}.         global real_gamma = 1
+{txt} 11{com}.         global real_mu = 1
+{txt} 12{com}.         matrix betas_st = (1,-2)
+{txt} 13{com}.     mata: data_gen()
+{txt} 14{com}.         randregret choice  x* , altern(alternative)  gr(id)     ///
+>                                                         rrm(classic) nocons  tech(bfgs) 
+{txt} 15{com}. end
+{txt}
+{com}. simulate        _b _se   ,  reps(${c -(}n_rep{c )-})  seed(157)  : sim_classicRRM
+{p2colset 7 17 21 2}{...}
+
+{txt}{p2col :command:}sim_classicRRM{p_end}
+
+Simulations ({res}100{txt})
+{hline 4}{c +}{hline 3} 1 {hline 3}{c +}{hline 3} 2 {hline 3}{c +}{hline 3} 3 {hline 3}{c +}{hline 3} 4 {hline 3}{c +}{hline 3} 5 
+..................................................    50
+..................................................   100
+
+{com}. 
+. 
+. graph hbox RRM_b_x1 RRM_b_x2,                           ///
+> ytitle(Estimated Parameters)                            ///
+> title(Box-Plot Estimated Coefficients)          ///
+> subtitle(Classic RRM Model)                             ///
+> caption("True Coefficients; \beta = (1,-2)")
+{res}{txt}
+{com}. 
+. graph export "sim_classicRRM_graph.pdf" , as(pdf) replace
+{txt}(file sim_classicRRM_graph.pdf written in PDF format)
+
+{com}. 
+. sum RRM_b_x1 RRM_b_x2
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 4}RRM_b_x1 {c |}{res}        100    1.001393     .030209    .941564   1.084654
+{txt}{space 4}RRM_b_x2 {c |}{res}        100   -2.004595    .0563773  -2.183858  -1.891597
+{txt}
+{com}. 
+. 
+. 
+. //------------------------------//
+. //---------Simulate GRRM--------//
+. //------------------------------//
+. capture program drop sim_GRRM
+{txt}
+{com}. program define sim_GRRM, rclass 
+{txt}  1{com}.     version 12
+{txt}  2{com}.         drop _all
+{txt}  3{com}.         set obs ${c -(}n_obs{c )-}
+{txt}  4{com}.         gen id = _n
+{txt}  5{com}.         local n_choices =3
+{txt}  6{com}.         expand `n_choices'
+{txt}  7{com}.         bys id : gen alternative = _n
+{txt}  8{com}.         gen x1 =  runiform(-2,2)
+{txt}  9{com}.         gen x2 =  runiform(-2,2)
+{txt} 10{com}.         global real_gamma = 0.5
+{txt} 11{com}.         global real_mu = 1
+{txt} 12{com}.         matrix betas_st = (1,-2)
+{txt} 13{com}.     mata: data_gen()
+{txt} 14{com}.         randregret choice  x* , altern(alternative)  gr(id) ///
+>                                                         rrm(gene) nocons  tech(bfgs) 
+{txt} 15{com}. end
+{txt}
+{com}. simulate        _b _se                                  ///
+>                         gamma = e(gamma)                ///
+>                         gamma_se = e(gamma_se)  /// 
+>                                                                 ,  reps(${c -(}n_rep{c )-})  seed(157)  : sim_GRRM
+{p2colset 8 18 22 2}{...}
+
+{txt}{p2col :command:}sim_GRRM{p_end}
+{p2colset 4 18 22 2}{...}
+{p2col :{txt}[{res:_eq5}]gamma:}{res:e(gamma)}{p_end}
+{p2colset 1 18 22 2}{...}
+{p2col :{txt}[{res:_eq5}]gamma_se:}{res:e(gamma_se)}{p_end}
+
+Simulations ({res}100{txt})
+{hline 4}{c +}{hline 3} 1 {hline 3}{c +}{hline 3} 2 {hline 3}{c +}{hline 3} 3 {hline 3}{c +}{hline 3} 4 {hline 3}{c +}{hline 3} 5 
+..................................................    50
+..................................................   100
+
+{com}. 
+. graph hbox RRM_b_x1 RRM_b_x2 _eq5_gamma,        ///
+> ytitle(Estimated Parameters)                            ///
+> subtitle(Box-Plot Estimated Coefficients)               ///
+> title(Generalized RRM Model)                    ///
+> caption("True Coefficients; \beta = (1,-2); gamma= 0.5")
+{res}{txt}
+{com}. 
+. graph export "sim_GRRM_graph.pdf" , as(pdf) replace
+{txt}(file sim_GRRM_graph.pdf written in PDF format)
+
+{com}. 
+. sum RRM_b_x1 RRM_b_x2 _eq5_gamma
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 4}RRM_b_x1 {c |}{res}        100    1.002419     .048533    .871241   1.104055
+{txt}{space 4}RRM_b_x2 {c |}{res}        100   -2.007831    .1064924   -2.25289  -1.696705
+{txt}{space 2}_eq5_gamma {c |}{res}        100     .506461    .0785494   .2997491   .7085789
+{txt}
+{com}.                         
+.                         
+. //------------------------------//
+. //--------Simulate muRRM--------//
+. //------------------------------//
+. capture program drop sim_muRRM
+{txt}
+{com}. program define sim_muRRM, rclass        
+{txt}  1{com}.     version 12
+{txt}  2{com}.         drop _all
+{txt}  3{com}.         set obs ${c -(}n_obs{c )-}
+{txt}  4{com}.         gen id = _n
+{txt}  5{com}.         local n_choices =3
+{txt}  6{com}.         expand `n_choices'
+{txt}  7{com}.         bys id : gen alternative = _n
+{txt}  8{com}.         gen x1 =  runiform(-2,2)
+{txt}  9{com}.         gen x2 =  runiform(-2,2)
+{txt} 10{com}.         global real_gamma = 1
+{txt} 11{com}.         global real_mu = 0.75
+{txt} 12{com}.         matrix betas_st = (1,-2)
+{txt} 13{com}.     mata: data_gen()
+{txt} 14{com}.         randregret choice  x* , altern(alternative)  gr(id) ///
+>                                                         rrm(mu) nocons  tech(bfgs) 
+{txt} 15{com}. end
+{txt}
+{com}. simulate        _b _se                                  ///
+>                         mu = e(mu)                      ///
+>                         mu_se = e(mu_se)                /// 
+>                                                                 ,  reps(${c -(}n_rep{c )-})  seed(157)  : sim_muRRM
+{p2colset 7 17 21 2}{...}
+
+{txt}{p2col :command:}sim_muRRM{p_end}
+{p2colset 6 17 21 2}{...}
+{p2col :{txt}[{res:_eq5}]mu:}{res:e(mu)}{p_end}
+{p2colset 3 17 21 2}{...}
+{p2col :{txt}[{res:_eq5}]mu_se:}{res:e(mu_se)}{p_end}
+
+Simulations ({res}100{txt})
+{hline 4}{c +}{hline 3} 1 {hline 3}{c +}{hline 3} 2 {hline 3}{c +}{hline 3} 3 {hline 3}{c +}{hline 3} 4 {hline 3}{c +}{hline 3} 5 
+..................................................    50
+..................................................   100
+
+{com}. 
+. graph hbox RRM_b_x1 RRM_b_x2 _eq5_mu,   ///
+> ytitle(Estimated Parameters)                            ///
+> subtitle(Box-Plot Estimated Coefficients)               ///
+> title(Mu RRM Model)                     ///
+> caption("True Coefficients; \beta = (1,-2); mu= 0.75")
+{res}{txt}
+{com}. 
+. graph export "sim_muRRM_graph.pdf" , as(pdf) replace
+{txt}(file sim_muRRM_graph.pdf written in PDF format)
+
+{com}. 
+. sum RRM_b_x1 RRM_b_x2 _eq5_mu
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 4}RRM_b_x1 {c |}{res}        100    .9999975    .0307767    .939611   1.075148
+{txt}{space 4}RRM_b_x2 {c |}{res}        100   -2.003108    .0525682  -2.167309  -1.905331
+{txt}{space 5}_eq5_mu {c |}{res}        100    .7553071    .1242996   .4737067   1.064327
+{txt}
+{com}.                         
+.                         
+. 
+. //------------------------------//
+. //--------Simulate PRRM --------//
+. //------------------------------//
+. capture program drop sim_PRRM
+{txt}
+{com}. program define sim_PRRM, rclass 
+{txt}  1{com}.     version 12
+{txt}  2{com}.         drop _all
+{txt}  3{com}.         set obs ${c -(}n_obs{c )-}
+{txt}  4{com}.         gen id = _n
+{txt}  5{com}.         local n_choices =3
+{txt}  6{com}.         expand `n_choices'
+{txt}  7{com}.         bys id : gen alternative = _n
+{txt}  8{com}.         gen _x1 =  runiform(-2,2)
+{txt}  9{com}.         gen _x2 =  runiform(-2,2)
+{txt} 10{com}. 
+.         *Transformation using randregre_pure
+.         randregret_pure _x1 , gr(id) sign(pos) prefix(x_)
+{txt} 11{com}.         randregret_pure _x2 , gr(id) sign(neg) prefix(x_)       
+{txt} 12{com}.         
+.         matrix betas_st = (1,-2)
+{txt} 13{com}.     
+.         global pure_model = "YES"
+{txt} 14{com}.         mata: data_gen()
+{txt} 15{com}.         
+.         randregret choice , altern(alternative)  gr(id)         ///
+>                                                 rrm(pure) nocons  tech(bfgs)    ///
+>                                                 pos(_x1) neg(_x2)
+{txt} 16{com}.                                                 
+. end
+{txt}
+{com}. 
+. simulate  _b _se        ,  reps(${c -(}n_rep{c )-})  seed(157)  : sim_PRRM
+{p2colset 7 17 21 2}{...}
+
+{txt}{p2col :command:}sim_PRRM{p_end}
+
+Simulations ({res}100{txt})
+{hline 4}{c +}{hline 3} 1 {hline 3}{c +}{hline 3} 2 {hline 3}{c +}{hline 3} 3 {hline 3}{c +}{hline 3} 4 {hline 3}{c +}{hline 3} 5 
+..................................................    50
+..................................................   100
+
+{com}. 
+. 
+. graph hbox choice_b_x1 choice_b_x2  ,                   ///
+> ytitle(Estimated Parameters)                                    ///
+> subtitle(Box-Plot Estimated Coefficients)               ///
+> title(Pure RRM Model)                                                   ///
+> caption("True Coefficients; \beta = (1,-2)")
+{res}{txt}
+{com}. 
+. graph export "sim_PRRM_graph.pdf" , as(pdf) replace
+{txt}(file sim_PRRM_graph.pdf written in PDF format)
+
+{com}. 
+. sum choice_b_x1 choice_b_x2
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 1}choice_b_x1 {c |}{res}        100    -.998902    .0285337   -1.06947  -.9262747
+{txt}{space 1}choice_b_x2 {c |}{res}        100    1.995641    .0512654   1.872805   2.121612
+{txt}
+{com}. 
+. 
+. 
+. 
+{txt}end of do-file
+
+{com}. 
+{txt}end of do-file
+
+{com}. quietly log close
+{smcl}
+{com}{sf}{ul off}

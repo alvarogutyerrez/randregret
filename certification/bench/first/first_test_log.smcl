@@ -1,0 +1,782 @@
+{smcl}
+{com}{sf}{ul off}{txt}
+{com}. do test
+{txt}
+{com}. about
+
+{txt}Stata/MP 16.0 for Windows (64-bit x86-64)
+Revision 23 Aug 2019
+Copyright 1985-2019 StataCorp LLC
+
+Total physical memory:     {res}  64.00 GB
+{txt}Available physical memory: {res}  14.72 GB
+
+Single-user 4-core Stata perpetual license:
+       Serial number:  501606271320
+         Licensed to:  Álvaro A. Gutiérrez Vargas
+                       Research Centre for Operations Research and Statistics
+{txt}
+{com}. 
+. 
+. do firsttest
+{txt}
+{com}. cscript "stub of test script"
+{txt}{hline 54}BEGIN stub of test script
+
+{com}. display "to be filled in"
+{res}to be filled in
+{txt}
+{com}. 
+. 
+. clear all
+{res}{txt}
+{com}. set more off
+{txt}
+{com}. which randregret
+{txt}d:\users\u0133260\ado\plus\r\randregret.ado
+{res}*! randregret 1.0.0 26Oct2020
+*! author aagv
+{txt}
+{com}. 
+. 
+. cd data 
+{res}D:\users\u0133260\Documents\randregret_certification\certification\bench\first\data
+{txt}
+{com}. use VoT
+{txt}
+{com}. 
+. 
+. 
+. 
+. keep obs id cs tt1 tc1 tt2 tc2 tt3 tc3 choice
+{txt}
+{com}. list obs id cs tt1 tc1 tt2 tc2 tt3 tc3 choice in 1/4,sepby(obs)
+{txt}
+     {c TLC}{hline 5}{c -}{hline 4}{c -}{hline 4}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c -}{hline 8}{c TRC}
+     {c |} {res}obs   id   cs   tt1   tc1   tt2   tc2   tt3   tc3   choice {txt}{c |}
+     {c LT}{hline 5}{c -}{hline 4}{c -}{hline 4}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c -}{hline 8}{c RT}
+  1. {c |} {res}  1    1    1    23     6    27     4    35     3        3 {txt}{c |}
+     {c LT}{hline 5}{c -}{hline 4}{c -}{hline 4}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c -}{hline 8}{c RT}
+  2. {c |} {res}  2    1    2    27     5    35     4    23     6        2 {txt}{c |}
+     {c LT}{hline 5}{c -}{hline 4}{c -}{hline 4}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c -}{hline 8}{c RT}
+  3. {c |} {res}  3    1    3    35     3    23     5    31     4        1 {txt}{c |}
+     {c LT}{hline 5}{c -}{hline 4}{c -}{hline 4}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c -}{hline 8}{c RT}
+  4. {c |} {res}  4    1    4    27     4    23     5    35     3        3 {txt}{c |}
+     {c BLC}{hline 5}{c -}{hline 4}{c -}{hline 4}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c -}{hline 5}{c -}{hline 8}{c BRC}
+
+{com}. rename (choice) (choice_w)
+{res}{txt}
+{com}. reshape long tt tc , i(obs) j(altern)
+{txt}(note: j = 1 2 3)
+
+Data{col 36}wide{col 43}->{col 48}long
+{hline 77}
+Number of obs.                 {res}    1060   {txt}->{res}    3180
+{txt}Number of variables            {res}      10   {txt}->{res}       7
+{txt}j variable (3 values)                     ->   {res}altern
+{txt}xij variables:
+                            {res}tt1 tt2 tt3   {txt}->   {res}tt
+                            tc1 tc2 tc3   {txt}->   {res}tc
+{txt}{hline 77}
+
+{com}. generate choice = 0
+{txt}
+{com}. replace choice = 1 if choice_w==altern
+{txt}(1,060 real changes made)
+
+{com}. label define alt_label 1 "First" 2 "Second" 3 "Third"
+{txt}
+{com}. label values altern alt_label
+{txt}
+{com}. list obs altern choice id cs tt tc in 1/12, sepby(obs)
+{txt}
+     {c TLC}{hline 5}{c -}{hline 8}{c -}{hline 8}{c -}{hline 4}{c -}{hline 4}{c -}{hline 4}{c -}{hline 4}{c TRC}
+     {c |} {res}obs   altern   choice   id   cs   tt   tc {txt}{c |}
+     {c LT}{hline 5}{c -}{hline 8}{c -}{hline 8}{c -}{hline 4}{c -}{hline 4}{c -}{hline 4}{c -}{hline 4}{c RT}
+  1. {c |} {res}  1    First        0    1    1   23    6 {txt}{c |}
+  2. {c |} {res}  1   Second        0    1    1   27    4 {txt}{c |}
+  3. {c |} {res}  1    Third        1    1    1   35    3 {txt}{c |}
+     {c LT}{hline 5}{c -}{hline 8}{c -}{hline 8}{c -}{hline 4}{c -}{hline 4}{c -}{hline 4}{c -}{hline 4}{c RT}
+  4. {c |} {res}  2    First        0    1    2   27    5 {txt}{c |}
+  5. {c |} {res}  2   Second        1    1    2   35    4 {txt}{c |}
+  6. {c |} {res}  2    Third        0    1    2   23    6 {txt}{c |}
+     {c LT}{hline 5}{c -}{hline 8}{c -}{hline 8}{c -}{hline 4}{c -}{hline 4}{c -}{hline 4}{c -}{hline 4}{c RT}
+  7. {c |} {res}  3    First        1    1    3   35    3 {txt}{c |}
+  8. {c |} {res}  3   Second        0    1    3   23    5 {txt}{c |}
+  9. {c |} {res}  3    Third        0    1    3   31    4 {txt}{c |}
+     {c LT}{hline 5}{c -}{hline 8}{c -}{hline 8}{c -}{hline 4}{c -}{hline 4}{c -}{hline 4}{c -}{hline 4}{c RT}
+ 10. {c |} {res}  4    First        0    1    4   27    4 {txt}{c |}
+ 11. {c |} {res}  4   Second        0    1    4   23    5 {txt}{c |}
+ 12. {c |} {res}  4    Third        1    1    4   35    3 {txt}{c |}
+     {c BLC}{hline 5}{c -}{hline 8}{c -}{hline 8}{c -}{hline 4}{c -}{hline 4}{c -}{hline 4}{c -}{hline 4}{c BRC}
+
+{com}. 
+. 
+. 
+. 
+. 
+. //---- Check: Optimization Technique ----//
+. 
+. * tech(hbbb) not allowed
+. rcof "noisily randregret choice  tt tc ,   altern(altern) gr(obs) rrm(classic)   tech(bhhh) nocons" == 498
+{err}technique(bhhh) is not allowed.
+{txt}
+{com}. 
+. 
+. 
+. //---- Check: -group()- & -alternative()-  ----//
+. 
+. *variable group() needs to be numeric 
+. gen non_numeric = "a"
+{txt}
+{com}. rcof "noisily randregret choice  tt tc ,   altern(altern) gr(non_numeric) rrm(classic)   nocons" == 498
+{err}The group variable must be numeric
+{txt}
+{com}. 
+. *variable alternative() needs to be numeric 
+. rcof "noisily randregret choice  tt tc ,   altern(non_numeric) gr(obs) rrm(classic)   nocons" == 498
+{err}The alternative variable must be numeric
+{txt}
+{com}. 
+. *variable cluster() needs to be numeric 
+. rcof "noisily randregret choice  tt tc ,   altern(altern) gr(obs) rrm(classic) cl(non_numeric)  nocons" == 498
+{err}The cluster variable must be numeric
+{txt}
+{com}. 
+. 
+. 
+. // ---- Checks on regressors and response variable ----//
+. 
+. 
+. // Check that the independent variables vary within groups //
+. gen x_const = 5
+{txt}
+{com}. rcof "noisily randregret choice  tt tc x_const ,   altern(altern) gr(obs) rrm(classic)   nocons" == 459                         
+{err}Variable x_const has no within-group variance
+{txt}
+{com}. 
+. *The dependent variable must be a 0-1 variable
+. gen y_constant = 7
+{txt}
+{com}. rcof "noisily randregret y_constant  tt tc ,   altern(altern) gr(obs) rrm(classic)   nocons" == 450             
+{err}The dependent variable must be a 0-1 variable indicating which alternatives are chosen
+{txt}
+{com}. 
+. * At least one group has more than one chosen alternative
+. gen y_only_1= 1
+{txt}
+{com}. rcof "noisily randregret y_only_1  tt tc ,   altern(altern) gr(obs) rrm(classic)   nocons" == 498               
+{err}At least one group has more than one chosen alternative
+{txt}
+{com}. 
+. 
+. 
+. // ---- Check on Alternative Specific Constants (ASC) ----//
+. 
+. *Option basealternative() not compatible with noconstant.
+. rcof "noisily randregret choice  tt tc ,  base(non_numeric)  altern(altern) gr(obs) rrm(classic)   tech(bfgs) nocons" == 198
+{err}Option basealternative() not compatible with noconstant.
+{txt}
+{com}. 
+. *In option basealternative(#), # must be numeric.
+. rcof "noisily randregret choice  tt tc ,  base(non_numeric)  altern(altern) gr(obs) rrm(classic)   tech(bfgs) " == 198
+{err}In option basealternative(#), # must be numeric.
+{txt}
+{com}. 
+. *Variable in alternatives() does not contain basealternative(#) provided 
+. rcof "noisily randregret choice  tt tc ,  base(5)  altern(altern) gr(obs) rrm(classic)   tech(bfgs) " == 198
+{err}Variable in alternatives() does not contain basealternative(#) provided 
+{txt}
+{com}. 
+. 
+. // ---- Checks regret function ----  //
+. 
+. *Non existing regret function
+. rcof "noisily randregret choice  tt tc ,   altern(altern) gr(obs) rrm(NOT_FOUND)  " == 111
+{err}Regret function misspecified: rrmfn()  
+{txt}
+{com}. 
+. 
+. 
+. ///---Pure: rrmfn(pure)---///
+> *Explanatory variables must be fill in positive() or negative() options 
+. rcof "noisily randregret choice  tt tc , altern(altern) gr(obs) rrm(pure)  " == 198
+{err}Explanatory variables must be fill in positive() or negative() options when using rrmfn('pure')
+{txt}
+{com}. 
+. *Explanatory variables are required
+. rcof "noisily randregret choice  ,  altern(altern) gr(obs) rrm(pure)  " == 100
+{err}varlist required
+{txt}
+{com}. 
+. *notlr not allowed
+. rcof "noisily randregret choice, pos(tt)  altern(altern) gr(obs) rrm(pure) notlr " == 198
+{err}nolrt is not compatible with rrmfn(pure)
+{txt}
+{com}. 
+. *notlr not allowed
+. rcof "noisily randregret choice, pos(tt) notlr altern(altern) gr(obs) rrm(pure) show " == 198
+{err}showancillary is not compatible with rrmfn(pure)
+{txt}
+{com}. 
+. 
+. 
+. ///---Classic: rrmfn(classic)---///
+> *Options positive() and negative() only posible using rrmfn('pure')
+. rcof "noisily randregret choice   , pos(tt ) neg(tc)  altern(altern) gr(obs) rrm(classic)  " == 198
+{err}Options positive() and negative() only posible using rrmfn('pure')
+{txt}
+{com}. 
+. *Option notlr not allowed
+. rcof "noisily randregret choice tt tc  ,  altern(altern) gr(obs) rrm(classic) notlr " == 198
+{err}Option notlr not allowed; only possible with rrmfn(mu) or rrmfn(gene)
+{txt}
+{com}. 
+. *Option show not allowed
+. rcof "noisily randregret choice tt tc  ,  altern(altern) gr(obs) rrm(classic) show " == 198
+{err}Option show not allowed; only possible with rrmfn(mu) or rrmfn(gene)
+{txt}
+{com}. 
+. *Init value for gamma_star where there is no gamma_star
+. rcof "noisily randregret choice  tc tt ,   altern(altern) gr(obs) rrm(classic) iter(0) initgamma(-1) " == 198
+{err}Options initgamma() only posible using rrmfn('gene')
+{txt}
+{com}. 
+. *Init value for mu_star where there is no mu_star
+. rcof "noisily randregret choice  tc tt ,   altern(altern) gr(obs) rrm(classic) iter(0) initmu(-1) " == 198
+{err}Options initmu() only posible using rrmfn('mu')
+{txt}
+{com}. 
+. *Init values regressors
+. matrix init = J(1,4,1)
+{txt}
+{com}. rcof "noisily randregret choice  tc tt , from(init)  altern(altern) gr(obs) rrm(classic) iter(0)  " == 0
+{txt}{hline 78}
+Fitting Classic RRM Model 
+{hline 78}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-5504.9724}  
+convergence not achieved
+{res}
+{txt}RRM: Classic Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(2){col 67}= {res}    154.07
+{txt}Log likelihood = {res}-5504.9724{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}tc {c |}{col 14}{res}{space 2}        1{col 26}{space 2} .0910626{col 37}{space 1}   10.98{col 46}{space 3}0.000{col 54}{space 4} .8215207{col 67}{space 3} 1.178479
+{txt}{space 10}tt {c |}{col 14}{res}{space 2}        1{col 26}{space 2} .0807514{col 37}{space 1}   12.38{col 46}{space 3}0.000{col 54}{space 4} .8417303{col 67}{space 3}  1.15827
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}ASC          {txt}{c |}
+{space 7}ASC_2 {c |}{col 14}{res}{space 2}        1{col 26}{space 2}  .215578{col 37}{space 1}    4.64{col 46}{space 3}0.000{col 54}{space 4} .5774749{col 67}{space 3} 1.422525
+{txt}{space 7}ASC_3 {c |}{col 14}{res}{space 2}        1{col 26}{space 2} .1371523{col 37}{space 1}    7.29{col 46}{space 3}0.000{col 54}{space 4} .7311865{col 67}{space 3} 1.268814
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+Warning: convergence not achieved
+
+{com}. 
+. 
+. 
+. 
+. ///---Generalized: rrmfn(gamma)---///
+> *Options positive() and negative() only posible using rrmfn('pure')
+. rcof "noisily randregret choice   , pos(tt ) neg(tc)  altern(altern) gr(obs) rrm(gene) " == 198
+{err}Options positive() and negative() only posible using rrmfn('pure')
+{txt}
+{com}. 
+. *lr test suppres
+. rcof "noisily randregret choice  tc tt ,   altern(altern) gr(obs) rrm(gene) notlr iter(0) " == 0
+{txt}{hline 78}
+Fitting Classic RRM for Initial Values
+{hline 78}
+{res}
+{txt}initial:{col 16}log likelihood = {res: -1164.529}
+alternative:{col 16}log likelihood = {res:-1180.2674}
+rescale:{col 16}log likelihood = {res:-1163.3619}
+rescale eq:{col 16}log likelihood = {res:-1121.1341}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1121.1341}  
+Iteration 1:{space 3}log likelihood = {res:-1113.6076}  
+Iteration 2:{space 3}log likelihood = {res:-1113.5986}  
+Iteration 3:{space 3}log likelihood = {res:-1113.5986}  
+{res}{txt}{hline 78}
+Fitting Generalized RRM Model 
+{hline 78}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1114.6602}  
+convergence not achieved
+{res}
+{txt}GRRM: Generalized Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(2){col 67}= {res}     38.81
+{txt}Log likelihood = {res}-1114.6602{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}tc {c |}{col 14}{res}{space 2} -.389129{col 26}{space 2} .0633558{col 37}{space 1}   -6.14{col 46}{space 3}0.000{col 54}{space 4}-.5133042{col 67}{space 3}-.2649538
+{txt}{space 10}tt {c |}{col 14}{res}{space 2}-.0910313{col 26}{space 2} .0147179{col 37}{space 1}   -6.19{col 46}{space 3}0.000{col 54}{space 4}-.1198779{col 67}{space 3}-.0621846
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}ASC          {txt}{c |}
+{space 7}ASC_2 {c |}{col 14}{res}{space 2}-.1673341{col 26}{space 2} .0793015{col 37}{space 1}   -2.11{col 46}{space 3}0.035{col 54}{space 4}-.3227622{col 67}{space 3} -.011906
+{txt}{space 7}ASC_3 {c |}{col 14}{res}{space 2} .0876183{col 26}{space 2} .0828138{col 37}{space 1}    1.06{col 46}{space 3}0.290{col 54}{space 4}-.0746938{col 67}{space 3} .2499304
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+       gamma {c |}{col 14}{res}{space 2}       .5{col 26}{space 2} .2239385{col 54}{space 4} .1473366{col 67}{space 3} .8526634
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+Warning: convergence not achieved
+
+{com}. 
+. *lr test included
+. rcof "noisily randregret choice  tc tt ,   altern(altern) gr(obs) rrm(gene) iter(0)  " == 0
+{txt}{hline 78}
+Fitting Classic RRM for Initial Values
+{hline 78}
+{res}
+{txt}initial:{col 16}log likelihood = {res: -1164.529}
+alternative:{col 16}log likelihood = {res:-1180.2674}
+rescale:{col 16}log likelihood = {res:-1163.3619}
+rescale eq:{col 16}log likelihood = {res:-1121.1341}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1121.1341}  
+Iteration 1:{space 3}log likelihood = {res:-1113.6076}  
+Iteration 2:{space 3}log likelihood = {res:-1113.5986}  
+Iteration 3:{space 3}log likelihood = {res:-1113.5986}  
+{res}{txt}{hline 78}
+Fitting Conditional Logit as a Restricted Model (gamma=0) for LR test
+{hline 78}
+{hline 78}
+Fitting Generalized RRM Model 
+{hline 78}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1114.6602}  
+convergence not achieved
+{res}
+{txt}GRRM: Generalized Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(2){col 67}= {res}     38.81
+{txt}Log likelihood = {res}-1114.6602{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}tc {c |}{col 14}{res}{space 2} -.389129{col 26}{space 2} .0633558{col 37}{space 1}   -6.14{col 46}{space 3}0.000{col 54}{space 4}-.5133042{col 67}{space 3}-.2649538
+{txt}{space 10}tt {c |}{col 14}{res}{space 2}-.0910313{col 26}{space 2} .0147179{col 37}{space 1}   -6.19{col 46}{space 3}0.000{col 54}{space 4}-.1198779{col 67}{space 3}-.0621846
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}ASC          {txt}{c |}
+{space 7}ASC_2 {c |}{col 14}{res}{space 2}-.1673341{col 26}{space 2} .0793015{col 37}{space 1}   -2.11{col 46}{space 3}0.035{col 54}{space 4}-.3227622{col 67}{space 3} -.011906
+{txt}{space 7}ASC_3 {c |}{col 14}{res}{space 2} .0876183{col 26}{space 2} .0828138{col 37}{space 1}    1.06{col 46}{space 3}0.290{col 54}{space 4}-.0746938{col 67}{space 3} .2499304
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+       gamma {c |}{col 14}{res}{space 2}       .5{col 26}{space 2} .2239385{col 54}{space 4} .1473366{col 67}{space 3} .8526634
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+Warning: convergence not achieved
+{txt}LR test of gamma=0: {help j_chibar##|_new:chibar2(01) = }{res}-7.2e-01{col 56}{txt}Prob >= chibar2 = {res}1.000
+{txt}LR test of gamma=1: {help j_chibar##|_new:chibar2(01) = }{res}-2.1e+00{col 56}{txt}Prob >= chibar2 = {res}1.000
+{txt}{hline 78}
+
+{com}. 
+. *show gamma_star
+. rcof "noisily randregret choice  tc tt ,   altern(altern) gr(obs) rrm(gene) iter(0) show " == 0
+{txt}{hline 78}
+Fitting Classic RRM for Initial Values
+{hline 78}
+{res}
+{txt}initial:{col 16}log likelihood = {res: -1164.529}
+alternative:{col 16}log likelihood = {res:-1180.2674}
+rescale:{col 16}log likelihood = {res:-1163.3619}
+rescale eq:{col 16}log likelihood = {res:-1121.1341}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1121.1341}  
+Iteration 1:{space 3}log likelihood = {res:-1113.6076}  
+Iteration 2:{space 3}log likelihood = {res:-1113.5986}  
+Iteration 3:{space 3}log likelihood = {res:-1113.5986}  
+{res}{txt}{hline 78}
+Fitting Conditional Logit as a Restricted Model (gamma=0) for LR test
+{hline 78}
+{hline 78}
+Fitting Generalized RRM Model 
+{hline 78}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1114.6602}  
+convergence not achieved
+{res}
+{txt}GRRM: Generalized Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(2){col 67}= {res}     38.81
+{txt}Log likelihood = {res}-1114.6602{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}tc {c |}{col 14}{res}{space 2} -.389129{col 26}{space 2} .0633558{col 37}{space 1}   -6.14{col 46}{space 3}0.000{col 54}{space 4}-.5133042{col 67}{space 3}-.2649538
+{txt}{space 10}tt {c |}{col 14}{res}{space 2}-.0910313{col 26}{space 2} .0147179{col 37}{space 1}   -6.19{col 46}{space 3}0.000{col 54}{space 4}-.1198779{col 67}{space 3}-.0621846
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}ASC          {txt}{c |}
+{space 7}ASC_2 {c |}{col 14}{res}{space 2}-.1673341{col 26}{space 2} .0793015{col 37}{space 1}   -2.11{col 46}{space 3}0.035{col 54}{space 4}-.3227622{col 67}{space 3} -.011906
+{txt}{space 7}ASC_3 {c |}{col 14}{res}{space 2} .0876183{col 26}{space 2} .0828138{col 37}{space 1}    1.06{col 46}{space 3}0.290{col 54}{space 4}-.0746938{col 67}{space 3} .2499304
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}gamma_star   {txt}{c |}
+{space 7}_cons {c |}{col 14}{res}{space 2}        0{col 26}{space 2} .8957539{col 37}{space 1}    0.00{col 46}{space 3}1.000{col 54}{space 4}-1.755645{col 67}{space 3} 1.755645
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+       gamma {c |}{col 14}{res}{space 2}       .5{col 26}{space 2} .2239385{col 54}{space 4} .1473366{col 67}{space 3} .8526634
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+Warning: convergence not achieved
+{txt}LR test of gamma=0: {help j_chibar##|_new:chibar2(01) = }{res}-7.2e-01{col 56}{txt}Prob >= chibar2 = {res}1.000
+{txt}LR test of gamma=1: {help j_chibar##|_new:chibar2(01) = }{res}-2.1e+00{col 56}{txt}Prob >= chibar2 = {res}1.000
+{txt}{hline 78}
+
+{com}. 
+. *Init value for gamma_star = -1
+. rcof "noisily randregret choice  tc tt ,   altern(altern) gr(obs) rrm(gene) iter(0) initgamma(-1) show" == 0
+{txt}{hline 78}
+Fitting Classic RRM for Initial Values
+{hline 78}
+{res}
+{txt}initial:{col 16}log likelihood = {res: -1164.529}
+alternative:{col 16}log likelihood = {res:-1180.2674}
+rescale:{col 16}log likelihood = {res:-1163.3619}
+rescale eq:{col 16}log likelihood = {res:-1121.1341}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1121.1341}  
+Iteration 1:{space 3}log likelihood = {res:-1113.6076}  
+Iteration 2:{space 3}log likelihood = {res:-1113.5986}  
+Iteration 3:{space 3}log likelihood = {res:-1113.5986}  
+{res}{txt}{hline 78}
+Fitting Conditional Logit as a Restricted Model (gamma=0) for LR test
+{hline 78}
+{hline 78}
+Fitting Generalized RRM Model 
+{hline 78}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1119.3633}  (not concave)
+convergence not achieved
+{res}
+{txt}GRRM: Generalized Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(2){col 67}= {res}    122.31
+{txt}Log likelihood = {res}-1119.3633{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}tc {c |}{col 14}{res}{space 2} -.389129{col 26}{space 2} .0351885{col 37}{space 1}  -11.06{col 46}{space 3}0.000{col 54}{space 4}-.4580972{col 67}{space 3}-.3201608
+{txt}{space 10}tt {c |}{col 14}{res}{space 2}-.0910313{col 26}{space 2} .0090276{col 37}{space 1}  -10.08{col 46}{space 3}0.000{col 54}{space 4} -.108725{col 67}{space 3}-.0733375
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}ASC          {txt}{c |}
+{space 7}ASC_2 {c |}{col 14}{res}{space 2}-.1673341{col 26}{space 2} .0794514{col 37}{space 1}   -2.11{col 46}{space 3}0.035{col 54}{space 4}-.3230559{col 67}{space 3}-.0116123
+{txt}{space 7}ASC_3 {c |}{col 14}{res}{space 2} .0876183{col 26}{space 2} .0824057{col 37}{space 1}    1.06{col 46}{space 3}0.288{col 54}{space 4}-.0738939{col 67}{space 3} .2491305
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}gamma_star   {txt}{c |}
+{space 7}_cons {c |}{col 14}{res}{space 2}       -1{col 26}{space 2}        .{col 37}{space 1}       .{col 46}{space 3}    .{col 54}{space 4}        .{col 67}{space 3}        .
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+       gamma {c |}{col 14}{res}{space 2} .2689414{col 26}{space 2}        .{col 54}{space 4}        .{col 67}{space 3}        .
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+Warning: convergence not achieved
+{txt}LR test of gamma=0: {help j_chibar##|_new:chibar2(01) = }{res}-1.0e+01{col 56}{txt}Prob >= chibar2 = {res}1.000
+{txt}LR test of gamma=1: {help j_chibar##|_new:chibar2(01) = }{res}-1.2e+01{col 56}{txt}Prob >= chibar2 = {res}1.000
+{txt}{hline 78}
+
+{com}. 
+. *Init value for mu_star where it should be initgamma
+. rcof "noisily randregret choice  tc tt ,   altern(altern) gr(obs) rrm(gene) iter(0) initmu(-1) show" == 198
+{err}Options initmu() only posible using rrmfn('mu')
+{txt}
+{com}. 
+. *Init value for all parameters 
+. matrix init = J(1,5,1)
+{txt}
+{com}. rcof "noisily randregret choice  tc tt , from(init)  altern(altern) gr(obs) rrm(gene) iter(0)  show" == 0
+{txt}{hline 78}
+Fitting Conditional Logit as a Restricted Model (gamma=0) for LR test
+{hline 78}
+{hline 78}
+Fitting Generalized RRM Model 
+{hline 78}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-5599.1453}  
+convergence not achieved
+{res}
+{txt}GRRM: Generalized Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(2){col 67}= {res}    141.82
+{txt}Log likelihood = {res}-5599.1453{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}tc {c |}{col 14}{res}{space 2}        1{col 26}{space 2} .0899693{col 37}{space 1}   11.11{col 46}{space 3}0.000{col 54}{space 4} .8236635{col 67}{space 3} 1.176337
+{txt}{space 10}tt {c |}{col 14}{res}{space 2}        1{col 26}{space 2} .0840521{col 37}{space 1}   11.90{col 46}{space 3}0.000{col 54}{space 4} .8352609{col 67}{space 3} 1.164739
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}ASC          {txt}{c |}
+{space 7}ASC_2 {c |}{col 14}{res}{space 2}        1{col 26}{space 2}   .22192{col 37}{space 1}    4.51{col 46}{space 3}0.000{col 54}{space 4} .5650447{col 67}{space 3} 1.434955
+{txt}{space 7}ASC_3 {c |}{col 14}{res}{space 2}        1{col 26}{space 2} .1386559{col 37}{space 1}    7.21{col 46}{space 3}0.000{col 54}{space 4} .7282394{col 67}{space 3} 1.271761
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}gamma_star   {txt}{c |}
+{space 7}_cons {c |}{col 14}{res}{space 2}        1{col 26}{space 2} .1651037{col 37}{space 1}    6.06{col 46}{space 3}0.000{col 54}{space 4} .6764027{col 67}{space 3} 1.323597
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+       gamma {c |}{col 14}{res}{space 2} .7310586{col 26}{space 2} .0324614{col 54}{space 4} .6629353{col 67}{space 3} .7897796
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+Warning: convergence not achieved
+{txt}LR test of gamma=0: {help j_chibar##|_new:chibar2(01) = }{res}-9.0e+03{col 56}{txt}Prob >= chibar2 = {res}1.000
+{txt}LR test of gamma=1: {help j_chibar##|_new:chibar2(01) = }{res}0.00{col 56}{txt}Prob >= chibar2 = {res}1.000
+{txt}{hline 78}
+
+{com}. 
+. 
+. ///---Mu: rrmfn(mu)---///
+> *Options positive() and negative() only posible using rrmfn('pure')
+. rcof "noisily randregret choice   , pos(tt ) neg(tc)  altern(altern) gr(obs) rrm(mu)  " == 198
+{err}Options positive() and negative() only posible using rrmfn('pure')
+{txt}
+{com}. 
+. *lr test suppres
+. rcof "noisily randregret choice  tc tt ,   altern(altern) gr(obs) rrm(mu) notlr iter(0) " == 0
+{txt}{hline 78}
+Fitting Classic RRM for Initial Values
+{hline 78}
+{res}
+{txt}initial:{col 16}log likelihood = {res: -1164.529}
+alternative:{col 16}log likelihood = {res:-1180.2674}
+rescale:{col 16}log likelihood = {res:-1163.3619}
+rescale eq:{col 16}log likelihood = {res:-1121.1341}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1121.1341}  
+Iteration 1:{space 3}log likelihood = {res:-1113.6076}  
+Iteration 2:{space 3}log likelihood = {res:-1113.5986}  
+Iteration 3:{space 3}log likelihood = {res:-1113.5986}  
+{res}{txt}{hline 78}
+Fitting muRRM Model
+{hline 78}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1113.4836}  (not concave)
+convergence not achieved
+{res}
+{txt}muRRM: Mu-Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(2){col 67}= {res}     67.68
+{txt}Log likelihood = {res}-1113.4836{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}tc {c |}{col 14}{res}{space 2} -.389129{col 26}{space 2}  .047312{col 37}{space 1}   -8.22{col 46}{space 3}0.000{col 54}{space 4}-.4818589{col 67}{space 3}-.2963991
+{txt}{space 10}tt {c |}{col 14}{res}{space 2}-.0910313{col 26}{space 2} .0123113{col 37}{space 1}   -7.39{col 46}{space 3}0.000{col 54}{space 4} -.115161{col 67}{space 3}-.0669016
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}ASC          {txt}{c |}
+{space 7}ASC_2 {c |}{col 14}{res}{space 2}-.1673341{col 26}{space 2} .0767378{col 37}{space 1}   -2.18{col 46}{space 3}0.029{col 54}{space 4}-.3177375{col 67}{space 3}-.0169307
+{txt}{space 7}ASC_3 {c |}{col 14}{res}{space 2} .0876183{col 26}{space 2} .0805742{col 37}{space 1}    1.09{col 46}{space 3}0.277{col 54}{space 4}-.0703041{col 67}{space 3} .2455407
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+          mu {c |}{col 14}{res}{space 2}      2.5{col 26}{space 2}        .{col 54}{space 4}        .{col 67}{space 3}        .
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+Warning: convergence not achieved
+
+{com}. 
+. *lr test included
+. rcof "noisily randregret choice  tc tt ,   altern(altern) gr(obs) rrm(mu) iter(0)  " == 0
+{txt}{hline 78}
+Fitting Classic RRM for Initial Values
+{hline 78}
+{res}
+{txt}initial:{col 16}log likelihood = {res: -1164.529}
+alternative:{col 16}log likelihood = {res:-1180.2674}
+rescale:{col 16}log likelihood = {res:-1163.3619}
+rescale eq:{col 16}log likelihood = {res:-1121.1341}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1121.1341}  
+Iteration 1:{space 3}log likelihood = {res:-1113.6076}  
+Iteration 2:{space 3}log likelihood = {res:-1113.5986}  
+Iteration 3:{space 3}log likelihood = {res:-1113.5986}  
+{res}{txt}{hline 78}
+Fitting muRRM Model
+{hline 78}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1113.4836}  (not concave)
+convergence not achieved
+{res}
+{txt}muRRM: Mu-Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(2){col 67}= {res}     67.68
+{txt}Log likelihood = {res}-1113.4836{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}tc {c |}{col 14}{res}{space 2} -.389129{col 26}{space 2}  .047312{col 37}{space 1}   -8.22{col 46}{space 3}0.000{col 54}{space 4}-.4818589{col 67}{space 3}-.2963991
+{txt}{space 10}tt {c |}{col 14}{res}{space 2}-.0910313{col 26}{space 2} .0123113{col 37}{space 1}   -7.39{col 46}{space 3}0.000{col 54}{space 4} -.115161{col 67}{space 3}-.0669016
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}ASC          {txt}{c |}
+{space 7}ASC_2 {c |}{col 14}{res}{space 2}-.1673341{col 26}{space 2} .0767378{col 37}{space 1}   -2.18{col 46}{space 3}0.029{col 54}{space 4}-.3177375{col 67}{space 3}-.0169307
+{txt}{space 7}ASC_3 {c |}{col 14}{res}{space 2} .0876183{col 26}{space 2} .0805742{col 37}{space 1}    1.09{col 46}{space 3}0.277{col 54}{space 4}-.0703041{col 67}{space 3} .2455407
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+          mu {c |}{col 14}{res}{space 2}      2.5{col 26}{space 2}        .{col 54}{space 4}        .{col 67}{space 3}        .
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+Warning: convergence not achieved
+{txt}LR test of mu=1: chi2(1) ={res}0.23{col 56}{txt}Prob >= chibar2 = {res}0.632
+{txt}{hline 78}
+
+{com}. 
+. *show mu_star
+. rcof "noisily randregret choice  tc tt ,   altern(altern) gr(obs) rrm(mu) iter(0) show " == 0
+{txt}{hline 78}
+Fitting Classic RRM for Initial Values
+{hline 78}
+{res}
+{txt}initial:{col 16}log likelihood = {res: -1164.529}
+alternative:{col 16}log likelihood = {res:-1180.2674}
+rescale:{col 16}log likelihood = {res:-1163.3619}
+rescale eq:{col 16}log likelihood = {res:-1121.1341}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1121.1341}  
+Iteration 1:{space 3}log likelihood = {res:-1113.6076}  
+Iteration 2:{space 3}log likelihood = {res:-1113.5986}  
+Iteration 3:{space 3}log likelihood = {res:-1113.5986}  
+{res}{txt}{hline 78}
+Fitting muRRM Model
+{hline 78}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1113.4836}  (not concave)
+convergence not achieved
+{res}
+{txt}muRRM: Mu-Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(2){col 67}= {res}     67.68
+{txt}Log likelihood = {res}-1113.4836{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}tc {c |}{col 14}{res}{space 2} -.389129{col 26}{space 2}  .047312{col 37}{space 1}   -8.22{col 46}{space 3}0.000{col 54}{space 4}-.4818589{col 67}{space 3}-.2963991
+{txt}{space 10}tt {c |}{col 14}{res}{space 2}-.0910313{col 26}{space 2} .0123113{col 37}{space 1}   -7.39{col 46}{space 3}0.000{col 54}{space 4} -.115161{col 67}{space 3}-.0669016
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}ASC          {txt}{c |}
+{space 7}ASC_2 {c |}{col 14}{res}{space 2}-.1673341{col 26}{space 2} .0767378{col 37}{space 1}   -2.18{col 46}{space 3}0.029{col 54}{space 4}-.3177375{col 67}{space 3}-.0169307
+{txt}{space 7}ASC_3 {c |}{col 14}{res}{space 2} .0876183{col 26}{space 2} .0805742{col 37}{space 1}    1.09{col 46}{space 3}0.277{col 54}{space 4}-.0703041{col 67}{space 3} .2455407
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}mu_star      {txt}{c |}
+{space 7}_cons {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+          mu {c |}{col 14}{res}{space 2}      2.5{col 26}{space 2}        .{col 54}{space 4}        .{col 67}{space 3}        .
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+Warning: convergence not achieved
+{txt}LR test of mu=1: chi2(1) ={res}0.23{col 56}{txt}Prob >= chibar2 = {res}0.632
+{txt}{hline 78}
+
+{com}. 
+. *Init value for mu_star = -1
+. rcof "noisily randregret choice  tc tt ,   altern(altern) gr(obs) rrm(mu) iter(0) initmu(-1) show" == 0
+{txt}{hline 78}
+Fitting Classic RRM for Initial Values
+{hline 78}
+{res}
+{txt}initial:{col 16}log likelihood = {res: -1164.529}
+alternative:{col 16}log likelihood = {res:-1180.2674}
+rescale:{col 16}log likelihood = {res:-1163.3619}
+rescale eq:{col 16}log likelihood = {res:-1121.1341}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1121.1341}  
+Iteration 1:{space 3}log likelihood = {res:-1113.6076}  
+Iteration 2:{space 3}log likelihood = {res:-1113.5986}  
+Iteration 3:{space 3}log likelihood = {res:-1113.5986}  
+{res}{txt}{hline 78}
+Fitting muRRM Model
+{hline 78}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1113.2156}  
+convergence not achieved
+{res}
+{txt}muRRM: Mu-Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(2){col 67}= {res}     63.80
+{txt}Log likelihood = {res}-1113.2156{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}tc {c |}{col 14}{res}{space 2} -.389129{col 26}{space 2} .0487646{col 37}{space 1}   -7.98{col 46}{space 3}0.000{col 54}{space 4}-.4847058{col 67}{space 3}-.2935522
+{txt}{space 10}tt {c |}{col 14}{res}{space 2}-.0910313{col 26}{space 2} .0127679{col 37}{space 1}   -7.13{col 46}{space 3}0.000{col 54}{space 4} -.116056{col 67}{space 3}-.0660065
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}ASC          {txt}{c |}
+{space 7}ASC_2 {c |}{col 14}{res}{space 2}-.1673341{col 26}{space 2} .0780258{col 37}{space 1}   -2.14{col 46}{space 3}0.032{col 54}{space 4}-.3202619{col 67}{space 3}-.0144063
+{txt}{space 7}ASC_3 {c |}{col 14}{res}{space 2} .0876183{col 26}{space 2} .0814963{col 37}{space 1}    1.08{col 46}{space 3}0.282{col 54}{space 4}-.0721115{col 67}{space 3} .2473481
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}mu_star      {txt}{c |}
+{space 7}_cons {c |}{col 14}{res}{space 2}       -1{col 26}{space 2} .7503041{col 37}{space 1}   -1.33{col 46}{space 3}0.183{col 54}{space 4}-2.470569{col 67}{space 3} .4705689
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+          mu {c |}{col 14}{res}{space 2} 1.344707{col 26}{space 2} .7375936{col 54}{space 4} .3897367{col 67}{space 3} 3.077592
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+Warning: convergence not achieved
+{txt}LR test of mu=1: chi2(1) ={res}0.77{col 56}{txt}Prob >= chibar2 = {res}0.381
+{txt}{hline 78}
+
+{com}. 
+. *Init value for gamma_star where it should be initmu
+. rcof "noisily randregret choice  tc tt ,   altern(altern) gr(obs) rrm(mu) iter(0) initgamma(-1) show" == 198
+{err}Options initgamma() only posible using rrmfn('gene')
+{txt}
+{com}. 
+. *Init value for all parameters 
+. matrix init = J(1,5,1)
+{txt}
+{com}. rcof "noisily randregret choice  tc tt , from(init)  altern(altern) gr(obs) rrm(mu) iter(0)  show" == 0
+{txt}{hline 78}
+Fitting muRRM Model
+{hline 78}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-5847.1611}  (not concave)
+convergence not achieved
+{res}
+{txt}muRRM: Mu-Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(1){col 67}= {res}    299.19
+{txt}Log likelihood = {res}-5847.1611{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}tc {c |}{col 14}{res}{space 2}        1{col 26}{space 2}        .{col 37}{space 1}       .{col 46}{space 3}    .{col 54}{space 4}        .{col 67}{space 3}        .
+{txt}{space 10}tt {c |}{col 14}{res}{space 2}        1{col 26}{space 2} .0578131{col 37}{space 1}   17.30{col 46}{space 3}0.000{col 54}{space 4} .8866884{col 67}{space 3} 1.113312
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}ASC          {txt}{c |}
+{space 7}ASC_2 {c |}{col 14}{res}{space 2}        1{col 26}{space 2} .3020678{col 37}{space 1}    3.31{col 46}{space 3}0.001{col 54}{space 4} .4079579{col 67}{space 3} 1.592042
+{txt}{space 7}ASC_3 {c |}{col 14}{res}{space 2}        1{col 26}{space 2}  .180987{col 37}{space 1}    5.53{col 46}{space 3}0.000{col 54}{space 4}  .645272{col 67}{space 3} 1.354728
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}mu_star      {txt}{c |}
+{space 7}_cons {c |}{col 14}{res}{space 2}        1{col 26}{space 2}        .{col 37}{space 1}       .{col 46}{space 3}    .{col 54}{space 4}        .{col 67}{space 3}        .
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+          mu {c |}{col 14}{res}{space 2} 3.655293{col 26}{space 2}        .{col 54}{space 4}        .{col 67}{space 3}        .
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+Warning: convergence not achieved
+{txt}LR test of mu=1: chi2(1) ={res}0.00{col 56}{txt}Prob >= chibar2 = {res}1.000
+{txt}{hline 78}
+
+{com}. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+{txt}end of do-file
+
+{com}. 
+{txt}end of do-file
+
+{com}. quietly log close
+{smcl}
+{com}{sf}{ul off}

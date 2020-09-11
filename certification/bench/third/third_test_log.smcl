@@ -1,0 +1,964 @@
+{smcl}
+{com}{sf}{ul off}{txt}
+{com}. do test
+{txt}
+{com}. about
+
+{txt}Stata/MP 16.0 for Windows (64-bit x86-64)
+Revision 23 Aug 2019
+Copyright 1985-2019 StataCorp LLC
+
+Total physical memory:     {res}  64.00 GB
+{txt}Available physical memory: {res}  18.18 GB
+
+Single-user 4-core Stata perpetual license:
+       Serial number:  501606271320
+         Licensed to:  Álvaro A. Gutiérrez Vargas
+                       Research Centre for Operations Research and Statistics
+{txt}
+{com}. 
+. 
+. do thirdtest
+{txt}
+{com}. cscript "stub of test script"
+{txt}{hline 54}BEGIN stub of test script
+
+{com}. display "to be filled in"
+{res}to be filled in
+{txt}
+{com}. 
+. 
+. clear all
+{res}{txt}
+{com}. set more off
+{txt}
+{com}. which randregret
+{txt}d:\users\u0133260\ado\plus\r\randregret.ado
+{res}*! randregret 1.0.0 26Oct2020
+*! author aagv
+{txt}
+{com}. which randregret_pure
+{txt}d:\users\u0133260\ado\plus\r\randregret_pure.ado
+{res}*! randregret 1.0.0 26Oct2020
+*! author aagv
+{txt}
+{com}. which randregretpred
+{txt}d:\users\u0133260\ado\plus\r\randregretpred.ado
+{res}*! version 1.0.0 01Jun2020
+{txt}
+{com}. 
+. 
+. ssc install estout
+{txt}checking {hilite:estout} consistency and verifying not already installed...
+all files already exist and are up to date.
+
+{com}. * Simulated data to test robust/cluster error correction 
+. 
+. * Checking the variance equivalence of:
+. *       (*)     non-robust
+. *       (*) robust
+. *       (*) robust cluster
+. *                                               ...     on a homoscedastic (large) data.
+. 
+. 
+. *RRM Models:
+. 
+. * classic       = 2 attributes -> b = (1,-2)
+. 
+. * gene          = 2 attributes -> b = (1,-2) & gamma = 0.5 
+. 
+. * mu            = 2 attributes -> b = (1,-2) & mu        = .75  
+. 
+. * pure          = 2 (pure)attributes -> b = (1,-2)  
+. 
+. global n_obs = 250000
+{txt}
+{com}. global tol = 1e-4
+{txt}
+{com}. 
+. 
+. mata:
+{txt}{hline 49} mata (type {cmd:end} to exit) {hline}
+{com}: void data_gen() 
+> {c -(}
+>                 st_view(X = ., ., "x*")
+>                 st_view(panvar = ., ., "id") 
+>                 betas  = st_matrix("betas_st")
+>                 gamma  = strtoreal(st_global("real_gamma")) 
+>                 mu         = strtoreal(st_global("real_mu")) 
+>                         
+>                 pure_model       = st_global("pure_model") 
+>                         
+>                 paninfo = panelsetup(panvar, 1)     
+>         npanels = panelstats(paninfo)[1] 
+>                 
+>                 for(n=1; n <= npanels; ++n) {c -(} 
+>             x_n = panelsubmatrix(X, n, paninfo) 
+>                         if (pure_model =="YES") {c -(}
+>                                 regret_n = -1*betas:* x_n 
+>                         {c )-}
+>                         else{c -(}
+>                                 regret_n =RRM_log_sim_data(x_n, betas, mu, gamma)  
+>                         {c )-} 
+>                         regret_sum =rowsum(regret_n) 
+>                         R_exp = exp(-regret_sum)
+>                         p_i =   R_exp :/ colsum(R_exp)
+>                                 
+>                         cum_p_i =runningsum(p_i)        
+>                         rand_draws = J(rows(x_n),1,uniform(1,1)) 
+>                         pbb_balance = rand_draws:<cum_p_i
+>                         cum_pbb_balance = runningsum(pbb_balance)
+>                         choice_n = (cum_pbb_balance:== J(rows(x_n),1,1))
+> 
+>                 if (n==1)     Y =choice_n       
+>                 else Y=Y \ choice_n     
+>                 {c )-}
+> resindex = st_addvar("byte","choice")
+> st_store((1,rows(Y)),resindex,Y)                
+> {c )-}
+
+: end
+{txt}{hline}
+
+{com}. 
+. mata:
+{txt}{hline 49} mata (type {cmd:end} to exit) {hline}
+{com}: function RRM_log_sim_data(      real matrix x_n, 
+>                                                         real rowvector betas,
+>                                                         real scalar mu,
+>                                                         real scalar gamma)
+> {c -(}
+> real scalar i, j ,r_m
+> real matrix regret_n 
+> regret_n = J(rows(x_n), cols(x_n), 0)
+> for(i=1; i <= rows(x_n); ++i) {c -(} 
+>         for(j=1; j <= rows(x_n); ++j) {c -(} 
+>                 if (i!=j) {c -(} 
+>                         r_i = ln(gamma :+ exp( (betas :/ mu) :* ( x_n[j , . ] :-  x_n[i, . ])))                                 
+>                         regret_n[i, . ] = regret_n[i, . ] :+ mu*r_i             
+>                         {c )-} 
+>                 {c )-}         
+>         {c )-}
+> return(regret_n)
+> {c )-}
+{txt}note: variable r_m unused
+
+{com}: end
+{txt}{hline}
+
+{com}. 
+. 
+. 
+. 
+. 
+. //------------------------------//
+. //-----Simulate classic RRM-----//
+. //------------------------------//
+. version 12
+{txt}
+{com}. drop _all
+{txt}
+{com}. set seed 157
+{txt}
+{com}. set obs ${c -(}n_obs{c )-}
+{txt}{p}
+number of observations (_N)  was 0,
+now 250,000
+{p_end}
+
+{com}. gen cluster_id = _n
+{txt}
+{com}. local n_cluster=3
+{txt}
+{com}. expand `n_cluster'
+{txt}(500,000 observations created)
+
+{com}. sort cluster_id
+{txt}
+{com}. gen id = _n
+{txt}
+{com}. local n_choices =3
+{txt}
+{com}. expand `n_choices'
+{txt}(1,500,000 observations created)
+
+{com}. bys id : gen alternative = _n
+{txt}
+{com}. sort  cluster_id id
+{txt}
+{com}. 
+. gen x1 =  runiform(-2,2)
+{txt}
+{com}. gen x2 =  runiform(-2,2)
+{txt}
+{com}. 
+. global real_gamma = 1
+{txt}
+{com}. global real_mu = 1
+{txt}
+{com}. matrix betas_st = (1,-2)
+{txt}
+{com}. mata: data_gen()
+{res}{txt}
+{com}. 
+. 
+. // Non-robust variance
+. eststo  c :randregret choice  x* , altern(alternative)  gr(id)          ///
+>                                                 rrm(classic) nocons  from(betas_st) 
+{txt}{hline 78}
+Fitting Classic RRM Model 
+{hline 78}
+{res}
+{txt}initial:{col 16}log likelihood = {res:-288823.81}
+rescale:{col 16}log likelihood = {res:-288823.81}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-288823.81}  
+Iteration 1:{space 3}log likelihood = {res:-288823.52}  
+Iteration 2:{space 3}log likelihood = {res:-288823.51}  
+{res}
+{txt}RRM: Classic Random Regret Minimization Model
+
+Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
+{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   2250000
+{txt}{col 48}Wald chi2(2){col 67}= {res} 233747.57
+{txt}Log likelihood = {res}-288823.51{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}x1 {c |}{col 14}{res}{space 2} 1.001802{col 26}{space 2} .0023512{col 37}{space 1}  426.09{col 46}{space 3}0.000{col 54}{space 4} .9971935{col 67}{space 3}  1.00641
+{txt}{space 10}x2 {c |}{col 14}{res}{space 2} -2.00255{col 26}{space 2} .0043702{col 37}{space 1} -458.23{col 46}{space 3}0.000{col 54}{space 4}-2.011116{col 67}{space 3}-1.993985
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+. matrix classicRRM_V = e(V)                                              
+{txt}
+{com}.                                                 
+. // Robust variance
+. eststo  cR :randregret choice  x* , altern(alternative)  gr(id)         ///
+>                                                 rrm(classic) nocons  from(betas_st)                     ///
+>                                                 robust
+{txt}{hline 78}
+Fitting Classic RRM Model 
+{hline 78}
+{res}
+{txt}initial:{col 16}log likelihood = {res:-288823.81}
+rescale:{col 16}log likelihood = {res:-288823.81}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-288823.81}  
+Iteration 1:{space 3}log likelihood = {res:-288823.52}  
+Iteration 2:{space 3}log likelihood = {res:-288823.51}  
+{res}
+{txt}RRM: Classic Random Regret Minimization Model
+
+Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
+{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   2250000
+{txt}{col 48}Wald chi2(2){col 67}= {res} 232479.95
+{txt}Log likelihood = {res}-288823.51{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}x1 {c |}{col 14}{res}{space 2} 1.001802{col 26}{space 2} .0023505{col 37}{space 1}  426.22{col 46}{space 3}0.000{col 54}{space 4} .9971949{col 67}{space 3} 1.006409
+{txt}{space 10}x2 {c |}{col 14}{res}{space 2} -2.00255{col 26}{space 2} .0043876{col 37}{space 1} -456.41{col 46}{space 3}0.000{col 54}{space 4} -2.01115{col 67}{space 3}-1.993951
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+. matrix classicRRM_V_robust = e(V)
+{txt}
+{com}.                                                 
+. // Cluster-robust variance
+. eststo cC : randregret choice  x* , altern(alternative)  gr(id)         ///
+>                                                 rrm(classic) nocons  from(betas_st)                     ///
+>                                                 cluster(cluster_id)
+{res}{txt}{hline 78}
+Fitting Classic RRM Model 
+{hline 78}
+{res}
+{txt}initial:{col 16}log likelihood = {res:-288823.81}
+rescale:{col 16}log likelihood = {res:-288823.81}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-288823.81}  
+Iteration 1:{space 3}log likelihood = {res:-288823.52}  
+Iteration 2:{space 3}log likelihood = {res:-288823.51}  
+{res}
+{txt}RRM: Classic Random Regret Minimization Model
+
+Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
+{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   2250000
+{txt}{col 48}Wald chi2(2){col 67}= {res} 232365.39
+{txt}Log likelihood = {res}-288823.51{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+                                   {txt}(Std. Err. adjusted for{res}250000{txt} clusters in cluster_id)
+{res}{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}x1 {c |}{col 14}{res}{space 2} 1.001802{col 26}{space 2} .0023507{col 37}{space 1}  426.17{col 46}{space 3}0.000{col 54}{space 4} .9971944{col 67}{space 3} 1.006409
+{txt}{space 10}x2 {c |}{col 14}{res}{space 2} -2.00255{col 26}{space 2} .0043886{col 37}{space 1} -456.31{col 46}{space 3}0.000{col 54}{space 4}-2.011152{col 67}{space 3}-1.993949
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. matrix classicRRM_V_cluster = e(V)
+{txt}
+{com}.                                                 
+. esttab  , label nodepvar nonumber    b(a6) se(a6)
+{res}
+{txt}{hline 68}
+{txt}                                c              cR              cC   
+{txt}{hline 68}
+{res}RRM                                                                 {txt}
+{txt}x1                  {res}     1.001802***     1.001802***     1.001802***{txt}
+                    {res} {ralign 12:{txt:(}0.00235116{txt:)}}    {ralign 12:{txt:(}0.00235045{txt:)}}    {ralign 12:{txt:(}0.00235070{txt:)}}   {txt}
+
+{txt}x2                  {res}    -2.002550***    -2.002550***    -2.002550***{txt}
+                    {res} {ralign 12:{txt:(}0.00437023{txt:)}}    {ralign 12:{txt:(}0.00438762{txt:)}}    {ralign 12:{txt:(}0.00438859{txt:)}}   {txt}
+{txt}{hline 68}
+{txt}Observations        {res}      2250000         2250000         2250000   {txt}
+{txt}{hline 68}
+{txt}Standard errors in parentheses
+{txt}* p<0.05, ** p<0.01, *** p<0.001
+
+{com}. esttab  using "var_correction_classicRRM"  , nostar label nodepvar nonumber  b(a6) se(a6) replace
+{res}{txt}(output written to {browse  `"var_correction_classicRRM.txt"'})
+
+{com}. estimates clear                                         
+{res}{txt}
+{com}. 
+. 
+. display                          mreldif(classicRRM_V, classicRRM_V_robust)
+{res}1.523e-07
+{txt}
+{com}. rcof "noisily assert mreldif(classicRRM_V, classicRRM_V_robust) < ${c -(}tol{c )-}" == 0
+{txt}
+{com}. 
+. display                          mreldif(classicRRM_V, classicRRM_V_cluster)
+{res}1.608e-07
+{txt}
+{com}. rcof "noisily assert mreldif(classicRRM_V, classicRRM_V_cluster) <${c -(}tol{c )-}" == 0
+{txt}
+{com}. 
+. 
+. 
+. 
+. 
+. 
+. 
+. //------------------------------//
+. //---------Simulate GRRM--------//
+. //------------------------------//
+. version 12
+{txt}
+{com}. drop _all
+{txt}
+{com}. set seed 157
+{txt}
+{com}. set obs ${c -(}n_obs{c )-}
+{txt}{p}
+number of observations (_N)  was 0,
+now 250,000
+{p_end}
+
+{com}. gen cluster_id = _n
+{txt}
+{com}. local n_cluster=3
+{txt}
+{com}. expand `n_cluster'
+{txt}(500,000 observations created)
+
+{com}. sort cluster_id
+{txt}
+{com}. gen id = _n
+{txt}
+{com}. local n_choices =3
+{txt}
+{com}. expand `n_choices'
+{txt}(1,500,000 observations created)
+
+{com}. bys id : gen alternative = _n
+{txt}
+{com}. sort  cluster_id id
+{txt}
+{com}. 
+. gen x1 =  runiform(-2,2)
+{txt}
+{com}. gen x2 =  runiform(-2,2)
+{txt}
+{com}. 
+. global real_gamma = 0.5
+{txt}
+{com}. global real_mu = 1
+{txt}
+{com}. matrix betas_st = (1,-2)
+{txt}
+{com}. mata: data_gen()
+{res}{txt}
+{com}. 
+. 
+. matrix init_gene  = betas_st,logit(${c -(}real_gamma{c )-})
+{txt}
+{com}. 
+. // Non-robust variance
+. eststo  g :randregret choice  x* , altern(alternative)  gr(id)                  ///
+>                                                 rrm(gene) nocons  from(init_gene)  show notlr   ///
+> 
+{txt}{hline 78}
+Fitting Generalized RRM Model 
+{hline 78}
+{res}
+{txt}initial:{col 16}log likelihood = {res: -238649.5}
+rescale:{col 16}log likelihood = {res: -238649.5}
+rescale eq:{col 16}log likelihood = {res: -238649.5}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -238649.5}  
+Iteration 1:{space 3}log likelihood = {res:-238649.35}  
+Iteration 2:{space 3}log likelihood = {res:-238648.68}  
+Iteration 3:{space 3}log likelihood = {res:-238648.68}  
+{res}
+{txt}GRRM: Generalized Random Regret Minimization Model
+
+Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
+{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   2250000
+{txt}{col 48}Wald chi2(2){col 67}= {res}  51772.51
+{txt}Log likelihood = {res}-238648.68{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}x1 {c |}{col 14}{res}{space 2} 1.005229{col 26}{space 2} .0044201{col 37}{space 1}  227.42{col 46}{space 3}0.000{col 54}{space 4} .9965654{col 67}{space 3} 1.013892
+{txt}{space 10}x2 {c |}{col 14}{res}{space 2}-2.010641{col 26}{space 2} .0094089{col 37}{space 1} -213.70{col 46}{space 3}0.000{col 54}{space 4}-2.029082{col 67}{space 3}  -1.9922
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}gamma_star   {txt}{c |}
+{space 7}_cons {c |}{col 14}{res}{space 2} .0195889{col 26}{space 2} .0272244{col 37}{space 1}    0.72{col 46}{space 3}0.472{col 54}{space 4}-.0337699{col 67}{space 3} .0729477
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+       gamma {c |}{col 14}{res}{space 2} .5048971{col 26}{space 2} .0068054{col 54}{space 4} .4915583{col 67}{space 3} .5182289
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. matrix GRRM_V = e(V)                                            
+{txt}
+{com}.                                                                                                 
+. // Robust variance
+. eststo  gR :randregret choice  x* , altern(alternative)  gr(id)                 ///
+>                                                 rrm(gene) nocons  from(init_gene)  show notlr   ///
+>                                                 robust
+{txt}{hline 78}
+Fitting Generalized RRM Model 
+{hline 78}
+{res}
+{txt}initial:{col 16}log likelihood = {res: -238649.5}
+rescale:{col 16}log likelihood = {res: -238649.5}
+rescale eq:{col 16}log likelihood = {res: -238649.5}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -238649.5}  
+Iteration 1:{space 3}log likelihood = {res:-238649.35}  
+Iteration 2:{space 3}log likelihood = {res:-238648.68}  
+Iteration 3:{space 3}log likelihood = {res:-238648.68}  
+{res}
+{txt}GRRM: Generalized Random Regret Minimization Model
+
+Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
+{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   2250000
+{txt}{col 48}Wald chi2(2){col 67}= {res}  52245.17
+{txt}Log likelihood = {res}-238648.68{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}x1 {c |}{col 14}{res}{space 2} 1.005229{col 26}{space 2} .0044003{col 37}{space 1}  228.45{col 46}{space 3}0.000{col 54}{space 4} .9966043{col 67}{space 3} 1.013853
+{txt}{space 10}x2 {c |}{col 14}{res}{space 2}-2.010641{col 26}{space 2} .0093654{col 37}{space 1} -214.69{col 46}{space 3}0.000{col 54}{space 4}-2.028997{col 67}{space 3}-1.992285
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}gamma_star   {txt}{c |}
+{space 7}_cons {c |}{col 14}{res}{space 2} .0195889{col 26}{space 2} .0270788{col 37}{space 1}    0.72{col 46}{space 3}0.469{col 54}{space 4}-.0334845{col 67}{space 3} .0726623
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+       gamma {c |}{col 14}{res}{space 2} .5048971{col 26}{space 2}  .006769{col 54}{space 4} .4916297{col 67}{space 3} .5181576
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+. matrix GRRM_V_robust = e(V)                                             
+{txt}
+{com}.                 
+. // Cluster-robust variance
+. eststo gC : randregret choice  x* , altern(alternative)  gr(id)                 ///
+>                                                 rrm(gene) nocons  from(init_gene)  show notlr   ///
+>                                                 cluster(cluster_id)
+{res}{txt}{hline 78}
+Fitting Generalized RRM Model 
+{hline 78}
+{res}
+{txt}initial:{col 16}log likelihood = {res: -238649.5}
+rescale:{col 16}log likelihood = {res: -238649.5}
+rescale eq:{col 16}log likelihood = {res: -238649.5}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -238649.5}  
+Iteration 1:{space 3}log likelihood = {res:-238649.35}  
+Iteration 2:{space 3}log likelihood = {res:-238648.68}  
+Iteration 3:{space 3}log likelihood = {res:-238648.68}  
+{res}
+{txt}GRRM: Generalized Random Regret Minimization Model
+
+Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
+{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   2250000
+{txt}{col 48}Wald chi2(2){col 67}= {res}  52546.83
+{txt}Log likelihood = {res}-238648.68{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+                                   {txt}(Std. Err. adjusted for{res}250000{txt} clusters in cluster_id)
+{res}{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}x1 {c |}{col 14}{res}{space 2} 1.005229{col 26}{space 2} .0043877{col 37}{space 1}  229.10{col 46}{space 3}0.000{col 54}{space 4}  .996629{col 67}{space 3} 1.013828
+{txt}{space 10}x2 {c |}{col 14}{res}{space 2}-2.010641{col 26}{space 2} .0093399{col 37}{space 1} -215.28{col 46}{space 3}0.000{col 54}{space 4}-2.028947{col 67}{space 3}-1.992335
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}gamma_star   {txt}{c |}
+{space 7}_cons {c |}{col 14}{res}{space 2} .0195889{col 26}{space 2} .0270268{col 37}{space 1}    0.72{col 46}{space 3}0.469{col 54}{space 4}-.0333826{col 67}{space 3} .0725605
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+       gamma {c |}{col 14}{res}{space 2} .5048971{col 26}{space 2}  .006756{col 54}{space 4} .4916551{col 67}{space 3} .5181322
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+. matrix GRRM_V_cluster = e(V)                                            
+{txt}
+{com}.                 
+. esttab  , label nodepvar nonumber    b(a6) se(a6)
+{res}
+{txt}{hline 68}
+{txt}                                g              gR              gC   
+{txt}{hline 68}
+{res}RRM                                                                 {txt}
+{txt}x1                  {res}     1.005229***     1.005229***     1.005229***{txt}
+                    {res} {ralign 12:{txt:(}0.00442007{txt:)}}    {ralign 12:{txt:(}0.00440027{txt:)}}    {ralign 12:{txt:(}0.00438766{txt:)}}   {txt}
+
+{txt}x2                  {res}    -2.010641***    -2.010641***    -2.010641***{txt}
+                    {res} {ralign 12:{txt:(}0.00940885{txt:)}}    {ralign 12:{txt:(}0.00936539{txt:)}}    {ralign 12:{txt:(}0.00933985{txt:)}}   {txt}
+{hline 68}
+{res}gamma_star                                                          {txt}
+{txt}Constant            {res}    0.0195889       0.0195889       0.0195889   {txt}
+                    {res} {ralign 12:{txt:(}0.0272244{txt:)}}    {ralign 12:{txt:(}0.0270788{txt:)}}    {ralign 12:{txt:(}0.0270268{txt:)}}   {txt}
+{txt}{hline 68}
+{txt}Observations        {res}      2250000         2250000         2250000   {txt}
+{txt}{hline 68}
+{txt}Standard errors in parentheses
+{txt}* p<0.05, ** p<0.01, *** p<0.001
+
+{com}. esttab  using "var_correction_GRRM"  , nostar label nodepvar nonumber  b(a6) se(a6) replace
+{res}{txt}(output written to {browse  `"var_correction_GRRM.txt"'})
+
+{com}. estimates clear                                                         
+{res}{txt}
+{com}. 
+. 
+. display                          mreldif(GRRM_V, GRRM_V_robust)
+{res}7.902e-06
+{txt}
+{com}. rcof "noisily assert mreldif(GRRM_V, GRRM_V_robust) < ${c -(}tol{c )-}" == 0
+{txt}
+{com}. 
+. display                          mreldif(GRRM_V, GRRM_V_cluster)
+{res}.00001071
+{txt}
+{com}. rcof "noisily assert mreldif(GRRM_V, GRRM_V_cluster) < ${c -(}tol{c )-}" == 0
+{txt}
+{com}. 
+. 
+.                                                                                         
+. //------------------------------//
+. //--------Simulate muRRM--------//
+. //------------------------------//
+. 
+. version 12
+{txt}
+{com}. drop _all
+{txt}
+{com}. set seed 157
+{txt}
+{com}. set obs ${c -(}n_obs{c )-}
+{txt}{p}
+number of observations (_N)  was 0,
+now 250,000
+{p_end}
+
+{com}. gen cluster_id = _n
+{txt}
+{com}. local n_cluster=3
+{txt}
+{com}. expand `n_cluster'
+{txt}(500,000 observations created)
+
+{com}. sort cluster_id
+{txt}
+{com}. gen id = _n
+{txt}
+{com}. local n_choices =3
+{txt}
+{com}. expand `n_choices'
+{txt}(1,500,000 observations created)
+
+{com}. bys id : gen alternative = _n
+{txt}
+{com}. sort  cluster_id id
+{txt}
+{com}. 
+. gen x1 =  runiform(-2,2)
+{txt}
+{com}. gen x2 =  runiform(-2,2)
+{txt}
+{com}. 
+. global real_gamma = 1
+{txt}
+{com}. global real_mu = 0.75
+{txt}
+{com}. matrix betas_st = (1,-2)
+{txt}
+{com}. mata: data_gen()
+{res}{txt}
+{com}. 
+. *invlogit(-1.72)*5 \approx 0.75 in transformed scale
+. matrix init_mu = betas_st, -1.72
+{txt}
+{com}. 
+. // Non-robust variance
+. eststo  u :randregret choice  x* , altern(alternative)  gr(id)          ///
+>                                                 rrm(mu) nocons notlr show  from(init_mu)        ///
+> 
+{txt}{hline 78}
+Fitting muRRM Model
+{hline 78}
+{res}
+{txt}initial:{col 16}log likelihood = {res:-291959.35}
+rescale:{col 16}log likelihood = {res:-291959.35}
+rescale eq:{col 16}log likelihood = {res:-291959.35}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-291959.35}  
+Iteration 1:{space 3}log likelihood = {res: -291956.9}  
+Iteration 2:{space 3}log likelihood = {res:-291956.82}  
+Iteration 3:{space 3}log likelihood = {res:-291956.82}  
+{res}
+{txt}muRRM: Mu-Random Regret Minimization Model
+
+Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
+{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   2250000
+{txt}{col 48}Wald chi2(2){col 67}= {res} 237593.23
+{txt}Log likelihood = {res}-291956.82{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}x1 {c |}{col 14}{res}{space 2} 1.001449{col 26}{space 2} .0023682{col 37}{space 1}  422.87{col 46}{space 3}0.000{col 54}{space 4} .9968071{col 67}{space 3}  1.00609
+{txt}{space 10}x2 {c |}{col 14}{res}{space 2}-2.002323{col 26}{space 2}  .004374{col 37}{space 1} -457.78{col 46}{space 3}0.000{col 54}{space 4}-2.010896{col 67}{space 3} -1.99375
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}mu_star      {txt}{c |}
+{space 7}_cons {c |}{col 14}{res}{space 2} -1.75195{col 26}{space 2} .0158996{col 37}{space 1} -110.19{col 46}{space 3}0.000{col 54}{space 4}-1.783113{col 67}{space 3}-1.720787
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+          mu {c |}{col 14}{res}{space 2}  .739007{col 26}{space 2} .0100133{col 54}{space 4}  .719596{col 67}{space 3} .7588488
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}.                                                 
+. matrix muRRM_V = e(V)                                           
+{txt}
+{com}. // Robust variance
+. eststo  uR :randregret choice  x* , altern(alternative)  gr(id)                 ///
+>                                                 rrm(mu) nocons notlr show  from(init_mu)                ///
+>                                                 robust
+{txt}{hline 78}
+Fitting muRRM Model
+{hline 78}
+{res}
+{txt}initial:{col 16}log likelihood = {res:-291959.35}
+rescale:{col 16}log likelihood = {res:-291959.35}
+rescale eq:{col 16}log likelihood = {res:-291959.35}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-291959.35}  
+Iteration 1:{space 3}log likelihood = {res: -291956.9}  
+Iteration 2:{space 3}log likelihood = {res:-291956.82}  
+Iteration 3:{space 3}log likelihood = {res:-291956.82}  
+{res}
+{txt}muRRM: Mu-Random Regret Minimization Model
+
+Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
+{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   2250000
+{txt}{col 48}Wald chi2(2){col 67}= {res} 236590.22
+{txt}Log likelihood = {res}-291956.82{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}x1 {c |}{col 14}{res}{space 2} 1.001449{col 26}{space 2} .0023671{col 37}{space 1}  423.07{col 46}{space 3}0.000{col 54}{space 4} .9968093{col 67}{space 3} 1.006088
+{txt}{space 10}x2 {c |}{col 14}{res}{space 2}-2.002323{col 26}{space 2} .0043903{col 37}{space 1} -456.08{col 46}{space 3}0.000{col 54}{space 4}-2.010928{col 67}{space 3}-1.993718
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}mu_star      {txt}{c |}
+{space 7}_cons {c |}{col 14}{res}{space 2} -1.75195{col 26}{space 2}  .015919{col 37}{space 1} -110.05{col 46}{space 3}0.000{col 54}{space 4}-1.783151{col 67}{space 3}-1.720749
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+          mu {c |}{col 14}{res}{space 2}  .739007{col 26}{space 2} .0100255{col 54}{space 4} .7195725{col 67}{space 3} .7588733
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+. matrix muRRM_V_robust= e(V)                                             
+{txt}
+{com}.                                                 
+. // Cluster-robust variance
+. eststo uC : randregret choice  x* , altern(alternative)  gr(id)                 ///
+>                                                 rrm(mu) nocons notlr show  from(init_mu)                ///
+>                                                 cluster(cluster_id)
+{res}{txt}{hline 78}
+Fitting muRRM Model
+{hline 78}
+{res}
+{txt}initial:{col 16}log likelihood = {res:-291959.35}
+rescale:{col 16}log likelihood = {res:-291959.35}
+rescale eq:{col 16}log likelihood = {res:-291959.35}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-291959.35}  
+Iteration 1:{space 3}log likelihood = {res: -291956.9}  
+Iteration 2:{space 3}log likelihood = {res:-291956.82}  
+Iteration 3:{space 3}log likelihood = {res:-291956.82}  
+{res}
+{txt}muRRM: Mu-Random Regret Minimization Model
+
+Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
+{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   2250000
+{txt}{col 48}Wald chi2(2){col 67}= {res} 236257.20
+{txt}Log likelihood = {res}-291956.82{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+                                   {txt}(Std. Err. adjusted for{res}250000{txt} clusters in cluster_id)
+{res}{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}x1 {c |}{col 14}{res}{space 2} 1.001449{col 26}{space 2} .0023689{col 37}{space 1}  422.75{col 46}{space 3}0.000{col 54}{space 4} .9968057{col 67}{space 3} 1.006092
+{txt}{space 10}x2 {c |}{col 14}{res}{space 2}-2.002323{col 26}{space 2} .0043912{col 37}{space 1} -455.98{col 46}{space 3}0.000{col 54}{space 4}-2.010929{col 67}{space 3}-1.993716
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}mu_star      {txt}{c |}
+{space 7}_cons {c |}{col 14}{res}{space 2} -1.75195{col 26}{space 2} .0159045{col 37}{space 1} -110.15{col 46}{space 3}0.000{col 54}{space 4}-1.783122{col 67}{space 3}-1.720778
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+          mu {c |}{col 14}{res}{space 2}  .739007{col 26}{space 2} .0100163{col 54}{space 4} .7195901{col 67}{space 3} .7588549
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+. matrix muRRM_V_cluster = e(V)                                           
+{txt}
+{com}.                 
+.                 
+. esttab  , label nodepvar nonumber    b(a6) se(a6)
+{res}
+{txt}{hline 68}
+{txt}                                u              uR              uC   
+{txt}{hline 68}
+{res}RRM                                                                 {txt}
+{txt}x1                  {res}     1.001449***     1.001449***     1.001449***{txt}
+                    {res} {ralign 12:{txt:(}0.00236820{txt:)}}    {ralign 12:{txt:(}0.00236709{txt:)}}    {ralign 12:{txt:(}0.00236891{txt:)}}   {txt}
+
+{txt}x2                  {res}    -2.002323***    -2.002323***    -2.002323***{txt}
+                    {res} {ralign 12:{txt:(}0.00437399{txt:)}}    {ralign 12:{txt:(}0.00439028{txt:)}}    {ralign 12:{txt:(}0.00439121{txt:)}}   {txt}
+{hline 68}
+{res}mu_star                                                             {txt}
+{txt}Constant            {res}    -1.751950***    -1.751950***    -1.751950***{txt}
+                    {res} {ralign 12:{txt:(}0.0158996{txt:)}}    {ralign 12:{txt:(}0.0159190{txt:)}}    {ralign 12:{txt:(}0.0159045{txt:)}}   {txt}
+{txt}{hline 68}
+{txt}Observations        {res}      2250000         2250000         2250000   {txt}
+{txt}{hline 68}
+{txt}Standard errors in parentheses
+{txt}* p<0.05, ** p<0.01, *** p<0.001
+
+{com}. esttab  using "var_correction_muRRM"  , nostar label nodepvar nonumber  b(a6) se(a6) replace
+{res}{txt}(output written to {browse  `"var_correction_muRRM.txt"'})
+
+{com}. estimates clear         
+{res}{txt}
+{com}. 
+. 
+. display                          mreldif(muRRM_V, muRRM_V_robust)
+{res}6.174e-07
+{txt}
+{com}. rcof "noisily assert mreldif(muRRM_V, muRRM_V_robust) < ${c -(}tol{c )-}" == 0
+{txt}
+{com}. 
+. display                          mreldif(muRRM_V, muRRM_V_cluster)
+{res}1.540e-07
+{txt}
+{com}. rcof "noisily assert mreldif(muRRM_V, muRRM_V_cluster) < ${c -(}tol{c )-}" == 0
+{txt}
+{com}. 
+. 
+. //------------------------------//
+. //--------Simulate PRRM --------//
+. //------------------------------//
+. 
+. version 12
+{txt}
+{com}. 
+. drop _all
+{txt}
+{com}. set seed 157
+{txt}
+{com}. set obs ${c -(}n_obs{c )-}
+{txt}{p}
+number of observations (_N)  was 0,
+now 250,000
+{p_end}
+
+{com}. gen cluster_id = _n
+{txt}
+{com}. local n_cluster=3
+{txt}
+{com}. expand `n_cluster'
+{txt}(500,000 observations created)
+
+{com}. sort cluster_id
+{txt}
+{com}. gen id = _n
+{txt}
+{com}. local n_choices =3
+{txt}
+{com}. expand `n_choices'
+{txt}(1,500,000 observations created)
+
+{com}. bys id : gen alternative = _n
+{txt}
+{com}. sort  cluster_id id
+{txt}
+{com}. 
+. gen _x1 =  runiform(-2,2)
+{txt}
+{com}. gen _x2 =  runiform(-2,2)
+{txt}
+{com}. 
+. *Transformation using randregre_pure
+. randregret_pure _x1 , gr(id) sign(pos) prefix(x_)
+{res}{txt}
+{com}. randregret_pure _x2 , gr(id) sign(neg) prefix(x_)       
+{res}{txt}
+{com}. 
+. global pure_model = "YES"
+{txt}
+{com}. 
+. global real_gamma       = 1
+{txt}
+{com}. global real_mu          = 1
+{txt}
+{com}. matrix betas_st         = (1,-2)
+{txt}
+{com}. mata: data_gen()
+{res}{txt}
+{com}. 
+. 
+. // Non-robust variance
+. eststo p : randregret choice , altern(alternative)  gr(id)              ///
+>                                                 rrm(pure) nocons  tech(bfgs)                    ///
+>                                                 pos(_x1) neg(_x2)                                               
+{res}
+{txt}PRRM: Pure Random Regret Minimization Model
+
+Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
+{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   2250000
+{txt}{col 48}Wald chi2(2){col 67}= {res} 251413.20
+{txt}Log likelihood = {res}-298058.39{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}choice       {txt}{c |}
+{space 9}_x1 {c |}{col 14}{res}{space 2} 1.001469{col 26}{space 2} .0023652{col 37}{space 1}  423.42{col 46}{space 3}0.000{col 54}{space 4}  .996833{col 67}{space 3} 1.006104
+{txt}{space 9}_x2 {c |}{col 14}{res}{space 2}-1.998668{col 26}{space 2}  .004145{col 37}{space 1} -482.19{col 46}{space 3}0.000{col 54}{space 4}-2.006792{col 67}{space 3}-1.990544
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+The Pure-RRM uses a transformation of the original regressors using options
+positive() and negative() as detailed in {browse "https://www.sciencedirect.com/science/article/pii/S0965856415000166":S. van Cranenburgh et. al (2015)}
+Afterward, randregret invokes clogit using these transormed regresors
+{hline 78}
+
+{com}. 
+. matrix PRRM_V = e(V)                                            
+{txt}
+{com}.                                                 
+. // Robust variance
+. eststo pR : randregret choice , altern(alternative)  gr(id)     ///
+>                                                 rrm(pure) nocons  tech(bfgs)                    ///
+>                                                 pos(_x1) neg(_x2)                                               ///
+>                                                 robust
+{res}
+{txt}PRRM: Pure Random Regret Minimization Model
+
+Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
+{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   2250000
+{txt}{col 48}Wald chi2(2){col 67}= {res} 251808.87
+{txt}Log likelihood = {res}-298058.39{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}choice       {txt}{c |}
+{space 9}_x1 {c |}{col 14}{res}{space 2} 1.001469{col 26}{space 2} .0023603{col 37}{space 1}  424.30{col 46}{space 3}0.000{col 54}{space 4} .9968426{col 67}{space 3} 1.006095
+{txt}{space 9}_x2 {c |}{col 14}{res}{space 2}-1.998668{col 26}{space 2} .0041453{col 37}{space 1} -482.15{col 46}{space 3}0.000{col 54}{space 4}-2.006793{col 67}{space 3}-1.990544
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+The Pure-RRM uses a transformation of the original regressors using options
+positive() and negative() as detailed in {browse "https://www.sciencedirect.com/science/article/pii/S0965856415000166":S. van Cranenburgh et. al (2015)}
+Afterward, randregret invokes clogit using these transormed regresors
+{hline 78}
+
+{com}. matrix PRRM_V_robust = e(V)                                             
+{txt}
+{com}. // Cluster-robust variance
+. eststo pC : randregret choice , altern(alternative)  gr(id)     ///
+>                                                 rrm(pure) nocons  tech(bfgs)                    ///
+>                                                 pos(_x1) neg(_x2)                                               ///
+>                                                 cluster(cluster_id)
+{res}
+{txt}PRRM: Pure Random Regret Minimization Model
+
+Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
+{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   2250000
+{txt}{col 48}Wald chi2(2){col 67}= {res} 251161.05
+{txt}Log likelihood = {res}-298058.39{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{ralign 78:(Std. Err. adjusted for {res:250,000} clusters in cluster_id)}
+{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}choice       {txt}{c |}
+{space 9}_x1 {c |}{col 14}{res}{space 2} 1.001469{col 26}{space 2} .0023644{col 37}{space 1}  423.56{col 46}{space 3}0.000{col 54}{space 4} .9968345{col 67}{space 3} 1.006103
+{txt}{space 9}_x2 {c |}{col 14}{res}{space 2}-1.998668{col 26}{space 2} .0041482{col 37}{space 1} -481.81{col 46}{space 3}0.000{col 54}{space 4}-2.006799{col 67}{space 3}-1.990538
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+The Pure-RRM uses a transformation of the original regressors using options
+positive() and negative() as detailed in {browse "https://www.sciencedirect.com/science/article/pii/S0965856415000166":S. van Cranenburgh et. al (2015)}
+Afterward, randregret invokes clogit using these transormed regresors
+{hline 78}
+
+{com}. 
+. matrix PRRM_V_cluster = e(V)                                            
+{txt}
+{com}.                                                                 
+. esttab  , label nodepvar nonumber    b(a6) se(a6)                                                       
+{res}
+{txt}{hline 68}
+{txt}                                p              pR              pC   
+{txt}{hline 68}
+{res}choice                                                              {txt}
+{txt}_x1                 {res}     1.001469***     1.001469***     1.001469***{txt}
+                    {res} {ralign 12:{txt:(}0.00236517{txt:)}}    {ralign 12:{txt:(}0.00236028{txt:)}}    {ralign 12:{txt:(}0.00236442{txt:)}}   {txt}
+
+{txt}_x2                 {res}    -1.998668***    -1.998668***    -1.998668***{txt}
+                    {res} {ralign 12:{txt:(}0.00414497{txt:)}}    {ralign 12:{txt:(}0.00414529{txt:)}}    {ralign 12:{txt:(}0.00414824{txt:)}}   {txt}
+{txt}{hline 68}
+{txt}Observations        {res}      2250000         2250000         2250000   {txt}
+{txt}{hline 68}
+{txt}Standard errors in parentheses
+{txt}* p<0.05, ** p<0.01, *** p<0.001
+
+{com}. esttab  using "var_correction_PRRM"  , nostar label nodepvar nonumber  b(a6) se(a6) replace
+{res}{txt}(output written to {browse  `"var_correction_PRRM.txt"'})
+
+{com}. estimates clear         
+{res}{txt}
+{com}. 
+. display                          mreldif(PRRM_V, PRRM_V_robust)
+{res}2.311e-08
+{txt}
+{com}. rcof "noisily assert mreldif(PRRM_V, PRRM_V_robust) < ${c -(}tol{c )-}" == 0
+{txt}
+{com}. 
+. display                          mreldif(PRRM_V, PRRM_V_cluster)
+{res}2.715e-08
+{txt}
+{com}. rcof "noisily assert mreldif(PRRM_V, PRRM_V_cluster) < ${c -(}tol{c )-}" == 0
+{txt}
+{com}. 
+. 
+{txt}end of do-file
+
+{com}. 
+{txt}end of do-file
+
+{com}. quietly log close
+{smcl}
+{com}{sf}{ul off}
