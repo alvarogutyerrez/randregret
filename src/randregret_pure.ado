@@ -2,7 +2,7 @@
 *! author aagv
 
 program  randregret_pure, eclass 
-        version 14
+        version 12
 	
         syntax varlist(min=1) [if] , 	///
 		GRoup(varname) 			 		///

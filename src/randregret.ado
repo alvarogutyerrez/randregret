@@ -187,7 +187,7 @@ program Estimate, eclass sortpreserve
 			}
 		// Generate ASC as tempvars
 		qui levelsof `alternatives', local(levels_altern)
-		// generate ASC variables
+		// tailored made ASC variables
 		tempvar ASC_
 		foreach i of local levels_altern {
 			tempvar ASC_`i'
@@ -204,7 +204,7 @@ program Estimate, eclass sortpreserve
 		// Generate local with ASC equation for ML //
 		local ASC_vars = "(ASC: `ASC_'*   , nocons)"
 	}
-	else { // if no constant are specified, local ASC_vars is empty
+	else { // if no constant are specified,  ASC_vars is empty
 		if "`basealternative'" !=""{
 			di in red "Option basealternative() not compatible with noconstant."
 			exit 198
@@ -297,7 +297,7 @@ if "`rrmfn'" == "pure" {
 		ereturn repost b=`b_pure' ,  rename esample(`touse')
 	}
 	else{
-		// recovering e(sample)
+		// recovering esample
 		tempname b_pure
 		matrix `b_pure' = e(b)
 		ereturn repost b=`b_pure' ,  rename esample(`touse')
@@ -358,6 +358,7 @@ else if "`rrmfn'" == "classic" {
 		exit 198
 	}
 		
+	
 	local RR_log = "(RRM: `lhs' = `rhs', nocons)"
 	local LL  `RR_log' `ASC_vars'
 	local title "RRM: Classic Random Regret Minimization Model"		
@@ -429,7 +430,7 @@ else if  "`rrmfn'" == "gene" {
 			local init "init(`from', copy skip )"
 		}
 	}
-	else { // Fitting Classic RRM for initial values of muRRm and GRRM
+	else { // Fitting Classic RRM for initial values
 		if ("`rrmfn'" == "gene") | ("`rrmfn'" == "mu") {
 			global regret_fn_user = "`rrmfn'"
 			global regret_fn "classic"
@@ -455,6 +456,7 @@ else if  "`rrmfn'" == "gene" {
 			global regret_fn = "${regret_fn_user}"	
 		}
 	}
+		
 		
 	// LR test for Generalized and muRRM
 	global notlr = "`notlr'"
