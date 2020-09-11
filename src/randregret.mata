@@ -1,4 +1,7 @@
-
+*! version 1.0.0  11Sep2020
+*! [aut & dev] 	Álvaro A. Gutiérrez Vargas
+*! [aut] 		Michel Meulders
+*! [aut] 		Martina Vandebroek 
 
 mata:
 	void randregret_LL(transmorphic scalar M, real scalar todo,

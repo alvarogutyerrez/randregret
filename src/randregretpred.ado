@@ -1,4 +1,8 @@
-*! version 1.0.0 01Jun2020
+*! version 1.0.0  11Sep2020
+*! [aut & dev] 	Álvaro A. Gutiérrez Vargas
+*! [aut] 		Michel Meulders
+*! [aut] 		Martina Vandebroek 
+
 program define randregretpred, eclass
         version 12
 	

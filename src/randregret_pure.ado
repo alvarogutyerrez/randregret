@@ -1,5 +1,7 @@
-*! randregret 1.0.0 26Oct2020
-*! author aagv
+*! version 1.0.0  11Sep2020
+*! [aut & dev] 	Álvaro A. Gutiérrez Vargas
+*! [aut] 		Michel Meulders
+*! [aut] 		Martina Vandebroek 
 
 program  randregret_pure, eclass 
         version 12
