@@ -124,12 +124,10 @@ program define randregretpred, eclass
 				}
 			}
 			
-
 			// generate ASC if needed
 			if "`e(ASC)'"=="YES" {
 				// Generate ASC as tempvars
 				qui levelsof `alternatives', local(levels_altern)
-				// tailored made ASC variables
 				tempvar ASC_
 				foreach i of local levels_altern {
 					tempvar ASC_`i'
@@ -180,8 +178,6 @@ program define randregretpred, eclass
 		qui replace `varlist' =. if e(sample)  != 1  
 		qui replace `varlist' =. if   `touse' !=1 
 		}	
-		
-
 		
 end
 

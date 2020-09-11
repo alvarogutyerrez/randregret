@@ -74,7 +74,7 @@ program Estimate, eclass sortpreserve
 	global cluster_mata =  "`cluster'"
 	
 	
-	// Previous checks.
+	// Previous checks
 	if ("`technique'" == "technique(bhhh)") {
 	di in red "technique(bhhh) is not allowed."
 	exit 498
@@ -187,7 +187,6 @@ program Estimate, eclass sortpreserve
 			}
 		// Generate ASC as tempvars
 		qui levelsof `alternatives', local(levels_altern)
-		// tailored made ASC variables
 		tempvar ASC_
 		foreach i of local levels_altern {
 			tempvar ASC_`i'
@@ -242,7 +241,6 @@ if "`rrmfn'" == "pure" {
 	
 	preserve 
 	qui keep if `touse'==1
-
 	tempvar prefix _temp
 
 	capture  randregret_pure `positive' if `touse', gr(`group')  sign(pos) prefix(`prefix') 
@@ -279,7 +277,7 @@ if "`rrmfn'" == "pure" {
 	if "${cons_demanded}" =="YES"{
 		tempname b_pure
 		matrix `b_pure' = e(b)
-		// replace tempvar names of ASC for meaningfull names
+		// replace tempvar names of ASC for meaningful  names
 		local names : colnames `b_pure'
 		qui tokenize `names'
 		foreach i of var `ASC_'*{
