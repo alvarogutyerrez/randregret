@@ -419,13 +419,5 @@ real matrix std_errs(real matrix 	D,
 }
 end
 
-/*
-
-capture mata: mata drop randregret_LL() RRM_log() pbb_pred() dR_db_fn() /*
-*/ dR_dmu_fn() dR_dgamma_fn()  std_errs()
-
-
-*/
-
 
  
