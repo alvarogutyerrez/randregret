@@ -22,7 +22,7 @@
 
 
 
-Here we describe the ```randregret``` command, which implements a variety of Random Regret Minimization (RRM) models. The command allows the user to apply the classic RRM model introduced in Chorus (2010, _European Journal of Transport and Infrastructure Research_ 10: 181-196), the Generalized RRM model introduced in Chorus (2014, Transportation Research Part B: Methodological 68: 224-238), and also the muRRM and Pure RRM models, both introduced in van Cranenburgh (2015, _Transportation Research Part A: Policy and Practice_ 74: 91-109). We illustrate the usage of the ```randregret``` command using stated choice data on route preferences. The command offers robust and cluster standard error correction using analytical expressions of the scores functions. It also offers likelihood ratio tests that can be used to assess the relevance of a given model specification. Finally, users can obtain the predicted probabilities from each model using the ```randregretpred``` command.
+Here we describe the ```randregret``` command, which implements a variety of Random Regret Minimization (RRM) models. The command allows the user to apply the classic RRM model introduced in Chorus (2010), the Generalized RRM model introduced in Chorus (2014), and also the muRRM and Pure RRM models, both introduced in van Cranenburgh (2015). We illustrate the usage of the ```randregret``` command using stated choice data on route preferences using data from van Cranenburgh (2018). The command offers robust and cluster standard error correction using analytical expressions of the scores functions. It also offers likelihood ratio tests that can be used to assess the relevance of a given model specification. Finally, users can obtain the predicted probabilities from each model using the ```randregretpred``` command.
 
 ```keywords```: randregret, randregret_pure, randregretpred, discrete choice models,  semi-compensatory behavior, random utility maximization, random regret minimization.
 
@@ -100,6 +100,18 @@ Professor [Sander van Cranenburgh](https://www.tudelft.nl/en/tpm/about-the-facul
 
 
 
+
+### References 
+
+> * Chorus. C. 2010.  A New Model of Random Regret Minimization.  European Journal of Transport and Infrastructure Research 10: pp. 181-196.
+
+> *    Chorus. C. 2013.  A Generalized Random Regret Minimization model.  Transportation Research Part B: Methodological 68: pp. 224-238.
+
+> *    Van Cranenburgh S., C.A. Guevara and C.G. Chorus 2015.  New insights on random regret minimization models.  Transportation Research Part A: Policy and Practice 74: pp. 91-109.
+
+> *    Van Cranenburgh S. and Alwosheel A. 2019.  An artificial neural network based approach to investigate travellers’ decision rules.  Transportation Research Part C: Emerging Technologies 98: pp. 152-166.
+
+> *    Van Cranenburgh, S. 2018.  Small value-of-time experiment, Netherlands. 4TU.Centre for Research Data. Dataset.
 
 
 
