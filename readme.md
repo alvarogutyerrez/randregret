@@ -85,7 +85,6 @@ randregret choice  , neg(tc tt) gr(obs) alt(altern) rrmfn(pure) cluster(id) noco
 
 ### Conferences
 
-
 > *   [Stata Meeting 2020, London, UK](https://events.timberlake.co.uk/event/2020-stata-conference). Slides available [here](https://www.dropbox.com/s/nke1edawl3dnfy0/randregret_London2020.pdf). 
 
 
@@ -94,7 +93,11 @@ randregret choice  , neg(tc tt) gr(obs) alt(altern) rrmfn(pure) cluster(id) noco
 
 ### Further information 
 
-Professor Sander van Cranenburgh has a website [https://www.advancedrrmmodels.com/](https://www.advancedrrmmodels.com/) where you can find routines in other languages to fit the RRM models (R, Python, and Matlab included.)
+Professor [https://www.tudelft.nl/en/tpm/about-the-faculty/departments/engineering-systems-and-services/people/assistant-professors/drir-s-sander-van-cranenburgh/](Sander van Cranenburgh) has a website [https://www.advancedrrmmodels.com/](https://www.advancedrrmmodels.com/) where you can find additional information about RRM models together with routines in other languages to fit them (R, Python, and Matlab included). A dofile that replicated his results can be found [https://github.com/alvarogutyerrez/randregret/blob/master/examples/randregret_replication_Sanders_routines.do](here).  
+
+
+
+
 
 
 
