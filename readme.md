@@ -1,13 +1,13 @@
-## ```randregret```: A command for fitting random regret minimization models using Stata 
+## *```randregret```*: A command for fitting random regret minimization models using Stata 
 
-```diff
+```
 *! randregret 1.0.0 26Oct2020
 *! author aagv
 
 /***********************************************************
--   ___   ____          __    ___   ___  __   ___   ___  ____
--  /__/  ____/  /\  /  /  \  /__/  /__  / _  /__/  /__    /
-- /  \  /___/  /  \/  /___/ /  \  /__  /__/ /  \  /__    /   
+   ___   ____          __    ___   ___  __   ___   ___  ____
+  /__/  ____/  /\  /  /  \  /__/  /__  / _  /__/  /__    /
+ /  \  /___/  /  \/  /___/ /  \  /__  /__/ /  \  /__    /   
 
  
  V.1.0:  d0 ml evaluator that run the following RRM models:
