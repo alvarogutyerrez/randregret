@@ -92,4 +92,19 @@ randregret choice  , neg(tc tt) gr(obs) alt(altern) rrmfn(pure) cluster(id) noco
 > *   [Stata Meeting 2020, Bern, Switzerland](https://ritme.com/CH-de/ritme/unsere-neuigkeiten/2020-swiss-stata-conference/). Slides are coming soon. 
 
 
+### Further information 
+
+Professor Sander van Cranenburgh has a website [https://www.advancedrrmmodels.com/](https://www.advancedrrmmodels.com/) where you can find routines in other languages to fit the RRM models (R, Python, and Matlab included.)
+
+
+
+
+
+
+
+
+
+
+
+
 
