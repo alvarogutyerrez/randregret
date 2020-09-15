@@ -1,11 +1,13 @@
-```
+## ```randregret```: A command for fitting random regret minimization models using Stata 
+
+```diff
 *! randregret 1.0.0 26Oct2020
 *! author aagv
 
 /***********************************************************
-   ___   ____          __    ___   ___  __   ___   ___  ____
-  /__/  ____/  /\  /  /  \  /__/  /__  / _  /__/  /__    /
- /  \  /___/  /  \/  /___/ /  \  /__  /__/ /  \  /__    /   
+-   ___   ____          __    ___   ___  __   ___   ___  ____
+-  /__/  ____/  /\  /  /  \  /__/  /__  / _  /__/  /__    /
+- /  \  /___/  /  \/  /___/ /  \  /__  /__/ /  \  /__    /   
 
  
  V.1.0:  d0 ml evaluator that run the following RRM models:
@@ -17,9 +19,6 @@
 		
 ************************************************************/
 ```
-
-## ```randregret```: A command for fitting random regret minimization models using Stata 
-
 
 
 Here we describe the ```randregret``` command, which implements a variety of Random Regret Minimization (RRM) models. The command allows the user to apply the classic RRM model introduced in Chorus (2010), the Generalized RRM model introduced in Chorus (2014), and also the muRRM and Pure RRM models, both introduced in van Cranenburgh (2015). We illustrate the usage of the ```randregret``` command using stated choice data on route preferences using data from van Cranenburgh (2018). The command offers robust and cluster standard error correction using analytical expressions of the scores functions. It also offers likelihood ratio tests that can be used to assess the relevance of a given model specification. Finally, users can obtain the predicted probabilities from each model using the ```randregretpred``` command.
