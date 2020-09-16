@@ -9,7 +9,7 @@ Revision 23 Aug 2019
 Copyright 1985-2019 StataCorp LLC
 
 Total physical memory:     {res}  64.00 GB
-{txt}Available physical memory: {res}  18.18 GB
+{txt}Available physical memory: {res}  59.30 GB
 
 Single-user 4-core Stata perpetual license:
        Serial number:  501606271320
@@ -34,17 +34,24 @@ Single-user 4-core Stata perpetual license:
 {txt}
 {com}. which randregret
 {txt}d:\users\u0133260\ado\plus\r\randregret.ado
-{res}*! randregret 1.0.0 26Oct2020
-*! author aagv
+{res}*! version 1.0.0  11Sep2020
+*! [aut & dev]  Álvaro A. Gutiérrez Vargas
+*! [aut]                Michel Meulders
+*! [aut]                Martina Vandebroek 
 {txt}
 {com}. which randregret_pure
 {txt}d:\users\u0133260\ado\plus\r\randregret_pure.ado
-{res}*! randregret 1.0.0 26Oct2020
-*! author aagv
+{res}*! version 1.0.0  11Sep2020
+*! [aut & dev]  Álvaro A. Gutiérrez Vargas
+*! [aut]                Michel Meulders
+*! [aut]                Martina Vandebroek 
 {txt}
 {com}. which randregretpred
 {txt}d:\users\u0133260\ado\plus\r\randregretpred.ado
-{res}*! version 1.0.0 01Jun2020
+{res}*! version 1.0.0  11Sep2020
+*! [aut & dev]  Álvaro A. Gutiérrez Vargas
+*! [aut]                Michel Meulders
+*! [aut]                Martina Vandebroek 
 {txt}
 {com}. 
 . 
@@ -71,7 +78,7 @@ all files already exist and are up to date.
 . 
 . * pure          = 2 (pure)attributes -> b = (1,-2)  
 . 
-. global n_obs = 250000
+. global n_obs = 550000
 {txt}
 {com}. global tol = 1e-4
 {txt}
@@ -163,7 +170,7 @@ all files already exist and are up to date.
 {com}. set obs ${c -(}n_obs{c )-}
 {txt}{p}
 number of observations (_N)  was 0,
-now 250,000
+now 550,000
 {p_end}
 
 {com}. gen cluster_id = _n
@@ -171,7 +178,7 @@ now 250,000
 {com}. local n_cluster=3
 {txt}
 {com}. expand `n_cluster'
-{txt}(500,000 observations created)
+{txt}(1,100,000 observations created)
 
 {com}. sort cluster_id
 {txt}
@@ -180,7 +187,7 @@ now 250,000
 {com}. local n_choices =3
 {txt}
 {com}. expand `n_choices'
-{txt}(1,500,000 observations created)
+{txt}(3,300,000 observations created)
 
 {com}. bys id : gen alternative = _n
 {txt}
@@ -209,24 +216,24 @@ now 250,000
 Fitting Classic RRM Model 
 {hline 78}
 {res}
-{txt}initial:{col 16}log likelihood = {res:-288823.81}
-rescale:{col 16}log likelihood = {res:-288823.81}
-{res}{txt}Iteration 0:{space 3}log likelihood = {res:-288823.81}  
-Iteration 1:{space 3}log likelihood = {res:-288823.52}  
-Iteration 2:{space 3}log likelihood = {res:-288823.51}  
+{txt}initial:{col 16}log likelihood = {res:-635267.35}
+rescale:{col 16}log likelihood = {res:-635267.35}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-635267.35}  
+Iteration 1:{space 3}log likelihood = {res:-635266.79}  
+Iteration 2:{space 3}log likelihood = {res:-635266.77}  
 {res}
 {txt}RRM: Classic Random Regret Minimization Model
 
-Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
-{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   2250000
-{txt}{col 48}Wald chi2(2){col 67}= {res} 233747.57
-{txt}Log likelihood = {res}-288823.51{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+Case ID variable: id{col 48}Number of cases{col 67}= {res}   1650000
+{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   4950000
+{txt}{col 48}Wald chi2(2){col 67}= {res} 514433.25
+{txt}Log likelihood = {res}-635266.77{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
 {txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
 {hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {res}RRM          {txt}{c |}
-{space 10}x1 {c |}{col 14}{res}{space 2} 1.001802{col 26}{space 2} .0023512{col 37}{space 1}  426.09{col 46}{space 3}0.000{col 54}{space 4} .9971935{col 67}{space 3}  1.00641
-{txt}{space 10}x2 {c |}{col 14}{res}{space 2} -2.00255{col 26}{space 2} .0043702{col 37}{space 1} -458.23{col 46}{space 3}0.000{col 54}{space 4}-2.011116{col 67}{space 3}-1.993985
+{space 10}x1 {c |}{col 14}{res}{space 2}  1.00008{col 26}{space 2} .0015843{col 37}{space 1}  631.24{col 46}{space 3}0.000{col 54}{space 4} .9969745{col 67}{space 3} 1.003185
+{txt}{space 10}x2 {c |}{col 14}{res}{space 2}-1.997799{col 26}{space 2}  .002938{col 37}{space 1} -679.99{col 46}{space 3}0.000{col 54}{space 4}-2.003557{col 67}{space 3}-1.992041
 {txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 
 {com}. 
@@ -241,25 +248,25 @@ Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
 Fitting Classic RRM Model 
 {hline 78}
 {res}
-{txt}initial:{col 16}log likelihood = {res:-288823.81}
-rescale:{col 16}log likelihood = {res:-288823.81}
-{res}{txt}Iteration 0:{space 3}log likelihood = {res:-288823.81}  
-Iteration 1:{space 3}log likelihood = {res:-288823.52}  
-Iteration 2:{space 3}log likelihood = {res:-288823.51}  
+{txt}initial:{col 16}log likelihood = {res:-635267.35}
+rescale:{col 16}log likelihood = {res:-635267.35}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-635267.35}  
+Iteration 1:{space 3}log likelihood = {res:-635266.79}  
+Iteration 2:{space 3}log likelihood = {res:-635266.77}  
 {res}
 {txt}RRM: Classic Random Regret Minimization Model
 
-Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
-{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   2250000
-{txt}{col 48}Wald chi2(2){col 67}= {res} 232479.95
-{txt}Log likelihood = {res}-288823.51{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+Case ID variable: id{col 48}Number of cases{col 67}= {res}   1650000
+{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   4950000
+{txt}{col 48}Wald chi2(2){col 67}= {res} 512638.71
+{txt}Log likelihood = {res}-635266.77{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
 {txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {col 14}{c |}{col 26}    Robust
 {col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
 {hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {res}RRM          {txt}{c |}
-{space 10}x1 {c |}{col 14}{res}{space 2} 1.001802{col 26}{space 2} .0023505{col 37}{space 1}  426.22{col 46}{space 3}0.000{col 54}{space 4} .9971949{col 67}{space 3} 1.006409
-{txt}{space 10}x2 {c |}{col 14}{res}{space 2} -2.00255{col 26}{space 2} .0043876{col 37}{space 1} -456.41{col 46}{space 3}0.000{col 54}{space 4} -2.01115{col 67}{space 3}-1.993951
+{space 10}x1 {c |}{col 14}{res}{space 2}  1.00008{col 26}{space 2} .0015856{col 37}{space 1}  630.72{col 46}{space 3}0.000{col 54}{space 4} .9969719{col 67}{space 3} 1.003187
+{txt}{space 10}x2 {c |}{col 14}{res}{space 2}-1.997799{col 26}{space 2} .0029431{col 37}{space 1} -678.82{col 46}{space 3}0.000{col 54}{space 4}-2.003567{col 67}{space 3}-1.992031
 {txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 
 {com}. 
@@ -274,26 +281,26 @@ Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
 Fitting Classic RRM Model 
 {hline 78}
 {res}
-{txt}initial:{col 16}log likelihood = {res:-288823.81}
-rescale:{col 16}log likelihood = {res:-288823.81}
-{res}{txt}Iteration 0:{space 3}log likelihood = {res:-288823.81}  
-Iteration 1:{space 3}log likelihood = {res:-288823.52}  
-Iteration 2:{space 3}log likelihood = {res:-288823.51}  
+{txt}initial:{col 16}log likelihood = {res:-635267.35}
+rescale:{col 16}log likelihood = {res:-635267.35}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-635267.35}  
+Iteration 1:{space 3}log likelihood = {res:-635266.79}  
+Iteration 2:{space 3}log likelihood = {res:-635266.77}  
 {res}
 {txt}RRM: Classic Random Regret Minimization Model
 
-Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
-{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   2250000
-{txt}{col 48}Wald chi2(2){col 67}= {res} 232365.39
-{txt}Log likelihood = {res}-288823.51{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
-                                   {txt}(Std. Err. adjusted for{res}250000{txt} clusters in cluster_id)
+Case ID variable: id{col 48}Number of cases{col 67}= {res}   1650000
+{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   4950000
+{txt}{col 48}Wald chi2(2){col 67}= {res} 513389.28
+{txt}Log likelihood = {res}-635266.77{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 34}(Std. Err. adjusted for {res}550000{txt} clusters in cluster_id)
 {res}{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {col 14}{c |}{col 26}    Robust
 {col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
 {hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {res}RRM          {txt}{c |}
-{space 10}x1 {c |}{col 14}{res}{space 2} 1.001802{col 26}{space 2} .0023507{col 37}{space 1}  426.17{col 46}{space 3}0.000{col 54}{space 4} .9971944{col 67}{space 3} 1.006409
-{txt}{space 10}x2 {c |}{col 14}{res}{space 2} -2.00255{col 26}{space 2} .0043886{col 37}{space 1} -456.31{col 46}{space 3}0.000{col 54}{space 4}-2.011152{col 67}{space 3}-1.993949
+{space 10}x1 {c |}{col 14}{res}{space 2}  1.00008{col 26}{space 2} .0015844{col 37}{space 1}  631.21{col 46}{space 3}0.000{col 54}{space 4} .9969744{col 67}{space 3} 1.003185
+{txt}{space 10}x2 {c |}{col 14}{res}{space 2}-1.997799{col 26}{space 2} .0029417{col 37}{space 1} -679.13{col 46}{space 3}0.000{col 54}{space 4}-2.003565{col 67}{space 3}-1.992033
 {txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 
 {com}. matrix classicRRM_V_cluster = e(V)
@@ -305,13 +312,13 @@ Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
 {txt}                                c              cR              cC   
 {txt}{hline 68}
 {res}RRM                                                                 {txt}
-{txt}x1                  {res}     1.001802***     1.001802***     1.001802***{txt}
-                    {res} {ralign 12:{txt:(}0.00235116{txt:)}}    {ralign 12:{txt:(}0.00235045{txt:)}}    {ralign 12:{txt:(}0.00235070{txt:)}}   {txt}
+{txt}x1                  {res}     1.000080***     1.000080***     1.000080***{txt}
+                    {res} {ralign 12:{txt:(}0.00158432{txt:)}}    {ralign 12:{txt:(}0.00158562{txt:)}}    {ralign 12:{txt:(}0.00158438{txt:)}}   {txt}
 
-{txt}x2                  {res}    -2.002550***    -2.002550***    -2.002550***{txt}
-                    {res} {ralign 12:{txt:(}0.00437023{txt:)}}    {ralign 12:{txt:(}0.00438762{txt:)}}    {ralign 12:{txt:(}0.00438859{txt:)}}   {txt}
+{txt}x2                  {res}    -1.997799***    -1.997799***    -1.997799***{txt}
+                    {res} {ralign 12:{txt:(}0.00293798{txt:)}}    {ralign 12:{txt:(}0.00294306{txt:)}}    {ralign 12:{txt:(}0.00294172{txt:)}}   {txt}
 {txt}{hline 68}
-{txt}Observations        {res}      2250000         2250000         2250000   {txt}
+{txt}Observations        {res}      4950000         4950000         4950000   {txt}
 {txt}{hline 68}
 {txt}Standard errors in parentheses
 {txt}* p<0.05, ** p<0.01, *** p<0.001
@@ -324,13 +331,13 @@ Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
 {com}. 
 . 
 . display                          mreldif(classicRRM_V, classicRRM_V_robust)
-{res}1.523e-07
+{res}2.986e-08
 {txt}
 {com}. rcof "noisily assert mreldif(classicRRM_V, classicRRM_V_robust) < ${c -(}tol{c )-}" == 0
 {txt}
 {com}. 
 . display                          mreldif(classicRRM_V, classicRRM_V_cluster)
-{res}1.608e-07
+{res}2.202e-08
 {txt}
 {com}. rcof "noisily assert mreldif(classicRRM_V, classicRRM_V_cluster) <${c -(}tol{c )-}" == 0
 {txt}
@@ -353,7 +360,7 @@ Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
 {com}. set obs ${c -(}n_obs{c )-}
 {txt}{p}
 number of observations (_N)  was 0,
-now 250,000
+now 550,000
 {p_end}
 
 {com}. gen cluster_id = _n
@@ -361,7 +368,7 @@ now 250,000
 {com}. local n_cluster=3
 {txt}
 {com}. expand `n_cluster'
-{txt}(500,000 observations created)
+{txt}(1,100,000 observations created)
 
 {com}. sort cluster_id
 {txt}
@@ -370,7 +377,7 @@ now 250,000
 {com}. local n_choices =3
 {txt}
 {com}. expand `n_choices'
-{txt}(1,500,000 observations created)
+{txt}(3,300,000 observations created)
 
 {com}. bys id : gen alternative = _n
 {txt}
@@ -403,31 +410,31 @@ now 250,000
 Fitting Generalized RRM Model 
 {hline 78}
 {res}
-{txt}initial:{col 16}log likelihood = {res: -238649.5}
-rescale:{col 16}log likelihood = {res: -238649.5}
-rescale eq:{col 16}log likelihood = {res: -238649.5}
-{res}{txt}Iteration 0:{space 3}log likelihood = {res: -238649.5}  
-Iteration 1:{space 3}log likelihood = {res:-238649.35}  
-Iteration 2:{space 3}log likelihood = {res:-238648.68}  
-Iteration 3:{space 3}log likelihood = {res:-238648.68}  
+{txt}initial:{col 16}log likelihood = {res:-524922.51}
+rescale:{col 16}log likelihood = {res:-524922.51}
+rescale eq:{col 16}log likelihood = {res:-524922.51}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-524922.51}  
+Iteration 1:{space 3}log likelihood = {res:-524922.51}  (backed up)
+Iteration 2:{space 3}log likelihood = {res:-524922.44}  
+Iteration 3:{space 3}log likelihood = {res:-524922.44}  
 {res}
 {txt}GRRM: Generalized Random Regret Minimization Model
 
-Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
-{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   2250000
-{txt}{col 48}Wald chi2(2){col 67}= {res}  51772.51
-{txt}Log likelihood = {res}-238648.68{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+Case ID variable: id{col 48}Number of cases{col 67}= {res}   1650000
+{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   4950000
+{txt}{col 48}Wald chi2(2){col 67}= {res} 113526.21
+{txt}Log likelihood = {res}-524922.44{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
 {txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
 {hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {res}RRM          {txt}{c |}
-{space 10}x1 {c |}{col 14}{res}{space 2} 1.005229{col 26}{space 2} .0044201{col 37}{space 1}  227.42{col 46}{space 3}0.000{col 54}{space 4} .9965654{col 67}{space 3} 1.013892
-{txt}{space 10}x2 {c |}{col 14}{res}{space 2}-2.010641{col 26}{space 2} .0094089{col 37}{space 1} -213.70{col 46}{space 3}0.000{col 54}{space 4}-2.029082{col 67}{space 3}  -1.9922
+{space 10}x1 {c |}{col 14}{res}{space 2} .9991458{col 26}{space 2} .0029662{col 37}{space 1}  336.84{col 46}{space 3}0.000{col 54}{space 4} .9933321{col 67}{space 3}  1.00496
+{txt}{space 10}x2 {c |}{col 14}{res}{space 2} -1.99786{col 26}{space 2} .0063318{col 37}{space 1} -315.53{col 46}{space 3}0.000{col 54}{space 4} -2.01027{col 67}{space 3} -1.98545
 {txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {res}gamma_star   {txt}{c |}
-{space 7}_cons {c |}{col 14}{res}{space 2} .0195889{col 26}{space 2} .0272244{col 37}{space 1}    0.72{col 46}{space 3}0.472{col 54}{space 4}-.0337699{col 67}{space 3} .0729477
+{space 7}_cons {c |}{col 14}{res}{space 2}-.0038689{col 26}{space 2} .0182109{col 37}{space 1}   -0.21{col 46}{space 3}0.832{col 54}{space 4}-.0395616{col 67}{space 3} .0318238
 {txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
-       gamma {c |}{col 14}{res}{space 2} .5048971{col 26}{space 2} .0068054{col 54}{space 4} .4915583{col 67}{space 3} .5182289
+       gamma {c |}{col 14}{res}{space 2} .4990328{col 26}{space 2} .0045527{col 54}{space 4} .4901109{col 67}{space 3} .5079553
 {txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 
 {com}. matrix GRRM_V = e(V)                                            
@@ -441,32 +448,32 @@ Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
 Fitting Generalized RRM Model 
 {hline 78}
 {res}
-{txt}initial:{col 16}log likelihood = {res: -238649.5}
-rescale:{col 16}log likelihood = {res: -238649.5}
-rescale eq:{col 16}log likelihood = {res: -238649.5}
-{res}{txt}Iteration 0:{space 3}log likelihood = {res: -238649.5}  
-Iteration 1:{space 3}log likelihood = {res:-238649.35}  
-Iteration 2:{space 3}log likelihood = {res:-238648.68}  
-Iteration 3:{space 3}log likelihood = {res:-238648.68}  
+{txt}initial:{col 16}log likelihood = {res:-524922.51}
+rescale:{col 16}log likelihood = {res:-524922.51}
+rescale eq:{col 16}log likelihood = {res:-524922.51}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-524922.51}  
+Iteration 1:{space 3}log likelihood = {res:-524922.51}  (backed up)
+Iteration 2:{space 3}log likelihood = {res:-524922.44}  
+Iteration 3:{space 3}log likelihood = {res:-524922.44}  
 {res}
 {txt}GRRM: Generalized Random Regret Minimization Model
 
-Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
-{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   2250000
-{txt}{col 48}Wald chi2(2){col 67}= {res}  52245.17
-{txt}Log likelihood = {res}-238648.68{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+Case ID variable: id{col 48}Number of cases{col 67}= {res}   1650000
+{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   4950000
+{txt}{col 48}Wald chi2(2){col 67}= {res} 114032.40
+{txt}Log likelihood = {res}-524922.44{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
 {txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {col 14}{c |}{col 26}    Robust
 {col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
 {hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {res}RRM          {txt}{c |}
-{space 10}x1 {c |}{col 14}{res}{space 2} 1.005229{col 26}{space 2} .0044003{col 37}{space 1}  228.45{col 46}{space 3}0.000{col 54}{space 4} .9966043{col 67}{space 3} 1.013853
-{txt}{space 10}x2 {c |}{col 14}{res}{space 2}-2.010641{col 26}{space 2} .0093654{col 37}{space 1} -214.69{col 46}{space 3}0.000{col 54}{space 4}-2.028997{col 67}{space 3}-1.992285
+{space 10}x1 {c |}{col 14}{res}{space 2} .9991458{col 26}{space 2} .0029597{col 37}{space 1}  337.59{col 46}{space 3}0.000{col 54}{space 4} .9933449{col 67}{space 3} 1.004947
+{txt}{space 10}x2 {c |}{col 14}{res}{space 2} -1.99786{col 26}{space 2} .0063186{col 37}{space 1} -316.18{col 46}{space 3}0.000{col 54}{space 4}-2.010244{col 67}{space 3}-1.985475
 {txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {res}gamma_star   {txt}{c |}
-{space 7}_cons {c |}{col 14}{res}{space 2} .0195889{col 26}{space 2} .0270788{col 37}{space 1}    0.72{col 46}{space 3}0.469{col 54}{space 4}-.0334845{col 67}{space 3} .0726623
+{space 7}_cons {c |}{col 14}{res}{space 2}-.0038689{col 26}{space 2} .0181395{col 37}{space 1}   -0.21{col 46}{space 3}0.831{col 54}{space 4}-.0394216{col 67}{space 3} .0316838
 {txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
-       gamma {c |}{col 14}{res}{space 2} .5048971{col 26}{space 2}  .006769{col 54}{space 4} .4916297{col 67}{space 3} .5181576
+       gamma {c |}{col 14}{res}{space 2} .4990328{col 26}{space 2} .0045348{col 54}{space 4} .4901459{col 67}{space 3} .5079203
 {txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 
 {com}. 
@@ -481,33 +488,33 @@ Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
 Fitting Generalized RRM Model 
 {hline 78}
 {res}
-{txt}initial:{col 16}log likelihood = {res: -238649.5}
-rescale:{col 16}log likelihood = {res: -238649.5}
-rescale eq:{col 16}log likelihood = {res: -238649.5}
-{res}{txt}Iteration 0:{space 3}log likelihood = {res: -238649.5}  
-Iteration 1:{space 3}log likelihood = {res:-238649.35}  
-Iteration 2:{space 3}log likelihood = {res:-238648.68}  
-Iteration 3:{space 3}log likelihood = {res:-238648.68}  
+{txt}initial:{col 16}log likelihood = {res:-524922.51}
+rescale:{col 16}log likelihood = {res:-524922.51}
+rescale eq:{col 16}log likelihood = {res:-524922.51}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-524922.51}  
+Iteration 1:{space 3}log likelihood = {res:-524922.51}  (backed up)
+Iteration 2:{space 3}log likelihood = {res:-524922.44}  
+Iteration 3:{space 3}log likelihood = {res:-524922.44}  
 {res}
 {txt}GRRM: Generalized Random Regret Minimization Model
 
-Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
-{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   2250000
-{txt}{col 48}Wald chi2(2){col 67}= {res}  52546.83
-{txt}Log likelihood = {res}-238648.68{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
-                                   {txt}(Std. Err. adjusted for{res}250000{txt} clusters in cluster_id)
+Case ID variable: id{col 48}Number of cases{col 67}= {res}   1650000
+{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   4950000
+{txt}{col 48}Wald chi2(2){col 67}= {res} 114364.94
+{txt}Log likelihood = {res}-524922.44{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 34}(Std. Err. adjusted for {res}550000{txt} clusters in cluster_id)
 {res}{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {col 14}{c |}{col 26}    Robust
 {col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
 {hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {res}RRM          {txt}{c |}
-{space 10}x1 {c |}{col 14}{res}{space 2} 1.005229{col 26}{space 2} .0043877{col 37}{space 1}  229.10{col 46}{space 3}0.000{col 54}{space 4}  .996629{col 67}{space 3} 1.013828
-{txt}{space 10}x2 {c |}{col 14}{res}{space 2}-2.010641{col 26}{space 2} .0093399{col 37}{space 1} -215.28{col 46}{space 3}0.000{col 54}{space 4}-2.028947{col 67}{space 3}-1.992335
+{space 10}x1 {c |}{col 14}{res}{space 2} .9991458{col 26}{space 2} .0029553{col 37}{space 1}  338.09{col 46}{space 3}0.000{col 54}{space 4} .9933536{col 67}{space 3} 1.004938
+{txt}{space 10}x2 {c |}{col 14}{res}{space 2} -1.99786{col 26}{space 2} .0063146{col 37}{space 1} -316.39{col 46}{space 3}0.000{col 54}{space 4}-2.010236{col 67}{space 3}-1.985483
 {txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {res}gamma_star   {txt}{c |}
-{space 7}_cons {c |}{col 14}{res}{space 2} .0195889{col 26}{space 2} .0270268{col 37}{space 1}    0.72{col 46}{space 3}0.469{col 54}{space 4}-.0333826{col 67}{space 3} .0725605
+{space 7}_cons {c |}{col 14}{res}{space 2}-.0038689{col 26}{space 2} .0181317{col 37}{space 1}   -0.21{col 46}{space 3}0.831{col 54}{space 4}-.0394064{col 67}{space 3} .0316686
 {txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
-       gamma {c |}{col 14}{res}{space 2} .5048971{col 26}{space 2}  .006756{col 54}{space 4} .4916551{col 67}{space 3} .5181322
+       gamma {c |}{col 14}{res}{space 2} .4990328{col 26}{space 2} .0045329{col 54}{space 4} .4901497{col 67}{space 3} .5079165
 {txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 
 {com}. 
@@ -520,17 +527,17 @@ Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
 {txt}                                g              gR              gC   
 {txt}{hline 68}
 {res}RRM                                                                 {txt}
-{txt}x1                  {res}     1.005229***     1.005229***     1.005229***{txt}
-                    {res} {ralign 12:{txt:(}0.00442007{txt:)}}    {ralign 12:{txt:(}0.00440027{txt:)}}    {ralign 12:{txt:(}0.00438766{txt:)}}   {txt}
+{txt}x1                  {res}     0.999146***     0.999146***     0.999146***{txt}
+                    {res} {ralign 12:{txt:(}0.00296623{txt:)}}    {ralign 12:{txt:(}0.00295969{txt:)}}    {ralign 12:{txt:(}0.00295528{txt:)}}   {txt}
 
-{txt}x2                  {res}    -2.010641***    -2.010641***    -2.010641***{txt}
-                    {res} {ralign 12:{txt:(}0.00940885{txt:)}}    {ralign 12:{txt:(}0.00936539{txt:)}}    {ralign 12:{txt:(}0.00933985{txt:)}}   {txt}
+{txt}x2                  {res}    -1.997860***    -1.997860***    -1.997860***{txt}
+                    {res} {ralign 12:{txt:(}0.00633182{txt:)}}    {ralign 12:{txt:(}0.00631864{txt:)}}    {ralign 12:{txt:(}0.00631462{txt:)}}   {txt}
 {hline 68}
 {res}gamma_star                                                          {txt}
-{txt}Constant            {res}    0.0195889       0.0195889       0.0195889   {txt}
-                    {res} {ralign 12:{txt:(}0.0272244{txt:)}}    {ralign 12:{txt:(}0.0270788{txt:)}}    {ralign 12:{txt:(}0.0270268{txt:)}}   {txt}
+{txt}Constant            {res}  -0.00386892     -0.00386892     -0.00386892   {txt}
+                    {res} {ralign 12:{txt:(}0.0182109{txt:)}}    {ralign 12:{txt:(}0.0181395{txt:)}}    {ralign 12:{txt:(}0.0181317{txt:)}}   {txt}
 {txt}{hline 68}
-{txt}Observations        {res}      2250000         2250000         2250000   {txt}
+{txt}Observations        {res}      4950000         4950000         4950000   {txt}
 {txt}{hline 68}
 {txt}Standard errors in parentheses
 {txt}* p<0.05, ** p<0.01, *** p<0.001
@@ -543,13 +550,13 @@ Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
 {com}. 
 . 
 . display                          mreldif(GRRM_V, GRRM_V_robust)
-{res}7.902e-06
+{res}2.596e-06
 {txt}
 {com}. rcof "noisily assert mreldif(GRRM_V, GRRM_V_robust) < ${c -(}tol{c )-}" == 0
 {txt}
 {com}. 
 . display                          mreldif(GRRM_V, GRRM_V_cluster)
-{res}.00001071
+{res}2.877e-06
 {txt}
 {com}. rcof "noisily assert mreldif(GRRM_V, GRRM_V_cluster) < ${c -(}tol{c )-}" == 0
 {txt}
@@ -569,7 +576,7 @@ Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
 {com}. set obs ${c -(}n_obs{c )-}
 {txt}{p}
 number of observations (_N)  was 0,
-now 250,000
+now 550,000
 {p_end}
 
 {com}. gen cluster_id = _n
@@ -577,7 +584,7 @@ now 250,000
 {com}. local n_cluster=3
 {txt}
 {com}. expand `n_cluster'
-{txt}(500,000 observations created)
+{txt}(1,100,000 observations created)
 
 {com}. sort cluster_id
 {txt}
@@ -586,7 +593,7 @@ now 250,000
 {com}. local n_choices =3
 {txt}
 {com}. expand `n_choices'
-{txt}(1,500,000 observations created)
+{txt}(3,300,000 observations created)
 
 {com}. bys id : gen alternative = _n
 {txt}
@@ -619,31 +626,31 @@ now 250,000
 Fitting muRRM Model
 {hline 78}
 {res}
-{txt}initial:{col 16}log likelihood = {res:-291959.35}
-rescale:{col 16}log likelihood = {res:-291959.35}
-rescale eq:{col 16}log likelihood = {res:-291959.35}
-{res}{txt}Iteration 0:{space 3}log likelihood = {res:-291959.35}  
-Iteration 1:{space 3}log likelihood = {res: -291956.9}  
-Iteration 2:{space 3}log likelihood = {res:-291956.82}  
-Iteration 3:{space 3}log likelihood = {res:-291956.82}  
+{txt}initial:{col 16}log likelihood = {res:-642242.69}
+rescale:{col 16}log likelihood = {res:-642242.69}
+rescale eq:{col 16}log likelihood = {res:-642242.69}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-642242.69}  
+Iteration 1:{space 3}log likelihood = {res:-642240.92}  
+Iteration 2:{space 3}log likelihood = {res:-642239.83}  
+Iteration 3:{space 3}log likelihood = {res:-642239.83}  
 {res}
 {txt}muRRM: Mu-Random Regret Minimization Model
 
-Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
-{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   2250000
-{txt}{col 48}Wald chi2(2){col 67}= {res} 237593.23
-{txt}Log likelihood = {res}-291956.82{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+Case ID variable: id{col 48}Number of cases{col 67}= {res}   1650000
+{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   4950000
+{txt}{col 48}Wald chi2(2){col 67}= {res} 522035.61
+{txt}Log likelihood = {res}-642239.83{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
 {txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
 {hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {res}RRM          {txt}{c |}
-{space 10}x1 {c |}{col 14}{res}{space 2} 1.001449{col 26}{space 2} .0023682{col 37}{space 1}  422.87{col 46}{space 3}0.000{col 54}{space 4} .9968071{col 67}{space 3}  1.00609
-{txt}{space 10}x2 {c |}{col 14}{res}{space 2}-2.002323{col 26}{space 2}  .004374{col 37}{space 1} -457.78{col 46}{space 3}0.000{col 54}{space 4}-2.010896{col 67}{space 3} -1.99375
+{space 10}x1 {c |}{col 14}{res}{space 2} .9999218{col 26}{space 2}  .001596{col 37}{space 1}  626.53{col 46}{space 3}0.000{col 54}{space 4} .9967938{col 67}{space 3}  1.00305
+{txt}{space 10}x2 {c |}{col 14}{res}{space 2}-1.996829{col 26}{space 2} .0029447{col 37}{space 1} -678.12{col 46}{space 3}0.000{col 54}{space 4}  -2.0026{col 67}{space 3}-1.991057
 {txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {res}mu_star      {txt}{c |}
-{space 7}_cons {c |}{col 14}{res}{space 2} -1.75195{col 26}{space 2} .0158996{col 37}{space 1} -110.19{col 46}{space 3}0.000{col 54}{space 4}-1.783113{col 67}{space 3}-1.720787
+{space 7}_cons {c |}{col 14}{res}{space 2}-1.734928{col 26}{space 2} .0106916{col 37}{space 1} -162.27{col 46}{space 3}0.000{col 54}{space 4}-1.755883{col 67}{space 3}-1.713973
 {txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
-          mu {c |}{col 14}{res}{space 2}  .739007{col 26}{space 2} .0100133{col 54}{space 4}  .719596{col 67}{space 3} .7588488
+          mu {c |}{col 14}{res}{space 2} .7497915{col 26}{space 2} .0068143{col 54}{space 4} .7365334{col 67}{space 3} .7632455
 {txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 
 {com}.                                                 
@@ -657,32 +664,32 @@ Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
 Fitting muRRM Model
 {hline 78}
 {res}
-{txt}initial:{col 16}log likelihood = {res:-291959.35}
-rescale:{col 16}log likelihood = {res:-291959.35}
-rescale eq:{col 16}log likelihood = {res:-291959.35}
-{res}{txt}Iteration 0:{space 3}log likelihood = {res:-291959.35}  
-Iteration 1:{space 3}log likelihood = {res: -291956.9}  
-Iteration 2:{space 3}log likelihood = {res:-291956.82}  
-Iteration 3:{space 3}log likelihood = {res:-291956.82}  
+{txt}initial:{col 16}log likelihood = {res:-642242.69}
+rescale:{col 16}log likelihood = {res:-642242.69}
+rescale eq:{col 16}log likelihood = {res:-642242.69}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-642242.69}  
+Iteration 1:{space 3}log likelihood = {res:-642240.92}  
+Iteration 2:{space 3}log likelihood = {res:-642239.83}  
+Iteration 3:{space 3}log likelihood = {res:-642239.83}  
 {res}
 {txt}muRRM: Mu-Random Regret Minimization Model
 
-Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
-{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   2250000
-{txt}{col 48}Wald chi2(2){col 67}= {res} 236590.22
-{txt}Log likelihood = {res}-291956.82{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+Case ID variable: id{col 48}Number of cases{col 67}= {res}   1650000
+{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   4950000
+{txt}{col 48}Wald chi2(2){col 67}= {res} 520863.89
+{txt}Log likelihood = {res}-642239.83{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
 {txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {col 14}{c |}{col 26}    Robust
 {col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
 {hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {res}RRM          {txt}{c |}
-{space 10}x1 {c |}{col 14}{res}{space 2} 1.001449{col 26}{space 2} .0023671{col 37}{space 1}  423.07{col 46}{space 3}0.000{col 54}{space 4} .9968093{col 67}{space 3} 1.006088
-{txt}{space 10}x2 {c |}{col 14}{res}{space 2}-2.002323{col 26}{space 2} .0043903{col 37}{space 1} -456.08{col 46}{space 3}0.000{col 54}{space 4}-2.010928{col 67}{space 3}-1.993718
+{space 10}x1 {c |}{col 14}{res}{space 2} .9999218{col 26}{space 2}  .001596{col 37}{space 1}  626.52{col 46}{space 3}0.000{col 54}{space 4} .9967937{col 67}{space 3}  1.00305
+{txt}{space 10}x2 {c |}{col 14}{res}{space 2}-1.996829{col 26}{space 2} .0029489{col 37}{space 1} -677.14{col 46}{space 3}0.000{col 54}{space 4}-2.002609{col 67}{space 3}-1.991049
 {txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {res}mu_star      {txt}{c |}
-{space 7}_cons {c |}{col 14}{res}{space 2} -1.75195{col 26}{space 2}  .015919{col 37}{space 1} -110.05{col 46}{space 3}0.000{col 54}{space 4}-1.783151{col 67}{space 3}-1.720749
+{space 7}_cons {c |}{col 14}{res}{space 2}-1.734928{col 26}{space 2}  .010691{col 37}{space 1} -162.28{col 46}{space 3}0.000{col 54}{space 4}-1.755882{col 67}{space 3}-1.713974
 {txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
-          mu {c |}{col 14}{res}{space 2}  .739007{col 26}{space 2} .0100255{col 54}{space 4} .7195725{col 67}{space 3} .7588733
+          mu {c |}{col 14}{res}{space 2} .7497915{col 26}{space 2} .0068139{col 54}{space 4} .7365341{col 67}{space 3} .7632447
 {txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 
 {com}. 
@@ -697,33 +704,33 @@ Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
 Fitting muRRM Model
 {hline 78}
 {res}
-{txt}initial:{col 16}log likelihood = {res:-291959.35}
-rescale:{col 16}log likelihood = {res:-291959.35}
-rescale eq:{col 16}log likelihood = {res:-291959.35}
-{res}{txt}Iteration 0:{space 3}log likelihood = {res:-291959.35}  
-Iteration 1:{space 3}log likelihood = {res: -291956.9}  
-Iteration 2:{space 3}log likelihood = {res:-291956.82}  
-Iteration 3:{space 3}log likelihood = {res:-291956.82}  
+{txt}initial:{col 16}log likelihood = {res:-642242.69}
+rescale:{col 16}log likelihood = {res:-642242.69}
+rescale eq:{col 16}log likelihood = {res:-642242.69}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-642242.69}  
+Iteration 1:{space 3}log likelihood = {res:-642240.92}  
+Iteration 2:{space 3}log likelihood = {res:-642239.83}  
+Iteration 3:{space 3}log likelihood = {res:-642239.83}  
 {res}
 {txt}muRRM: Mu-Random Regret Minimization Model
 
-Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
-{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   2250000
-{txt}{col 48}Wald chi2(2){col 67}= {res} 236257.20
-{txt}Log likelihood = {res}-291956.82{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
-                                   {txt}(Std. Err. adjusted for{res}250000{txt} clusters in cluster_id)
+Case ID variable: id{col 48}Number of cases{col 67}= {res}   1650000
+{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   4950000
+{txt}{col 48}Wald chi2(2){col 67}= {res} 520922.88
+{txt}Log likelihood = {res}-642239.83{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 34}(Std. Err. adjusted for {res}550000{txt} clusters in cluster_id)
 {res}{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {col 14}{c |}{col 26}    Robust
 {col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
 {hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {res}RRM          {txt}{c |}
-{space 10}x1 {c |}{col 14}{res}{space 2} 1.001449{col 26}{space 2} .0023689{col 37}{space 1}  422.75{col 46}{space 3}0.000{col 54}{space 4} .9968057{col 67}{space 3} 1.006092
-{txt}{space 10}x2 {c |}{col 14}{res}{space 2}-2.002323{col 26}{space 2} .0043912{col 37}{space 1} -455.98{col 46}{space 3}0.000{col 54}{space 4}-2.010929{col 67}{space 3}-1.993716
+{space 10}x1 {c |}{col 14}{res}{space 2} .9999218{col 26}{space 2} .0015964{col 37}{space 1}  626.34{col 46}{space 3}0.000{col 54}{space 4} .9967928{col 67}{space 3} 1.003051
+{txt}{space 10}x2 {c |}{col 14}{res}{space 2}-1.996829{col 26}{space 2} .0029499{col 37}{space 1} -676.91{col 46}{space 3}0.000{col 54}{space 4}-2.002611{col 67}{space 3}-1.991047
 {txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {res}mu_star      {txt}{c |}
-{space 7}_cons {c |}{col 14}{res}{space 2} -1.75195{col 26}{space 2} .0159045{col 37}{space 1} -110.15{col 46}{space 3}0.000{col 54}{space 4}-1.783122{col 67}{space 3}-1.720778
+{space 7}_cons {c |}{col 14}{res}{space 2}-1.734928{col 26}{space 2}  .010686{col 37}{space 1} -162.36{col 46}{space 3}0.000{col 54}{space 4}-1.755872{col 67}{space 3}-1.713984
 {txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
-          mu {c |}{col 14}{res}{space 2}  .739007{col 26}{space 2} .0100163{col 54}{space 4} .7195901{col 67}{space 3} .7588549
+          mu {c |}{col 14}{res}{space 2} .7497915{col 26}{space 2} .0068108{col 54}{space 4} .7365402{col 67}{space 3} .7632384
 {txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 
 {com}. 
@@ -737,17 +744,17 @@ Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
 {txt}                                u              uR              uC   
 {txt}{hline 68}
 {res}RRM                                                                 {txt}
-{txt}x1                  {res}     1.001449***     1.001449***     1.001449***{txt}
-                    {res} {ralign 12:{txt:(}0.00236820{txt:)}}    {ralign 12:{txt:(}0.00236709{txt:)}}    {ralign 12:{txt:(}0.00236891{txt:)}}   {txt}
+{txt}x1                  {res}     0.999922***     0.999922***     0.999922***{txt}
+                    {res} {ralign 12:{txt:(}0.00159597{txt:)}}    {ralign 12:{txt:(}0.00159600{txt:)}}    {ralign 12:{txt:(}0.00159645{txt:)}}   {txt}
 
-{txt}x2                  {res}    -2.002323***    -2.002323***    -2.002323***{txt}
-                    {res} {ralign 12:{txt:(}0.00437399{txt:)}}    {ralign 12:{txt:(}0.00439028{txt:)}}    {ralign 12:{txt:(}0.00439121{txt:)}}   {txt}
+{txt}x2                  {res}    -1.996829***    -1.996829***    -1.996829***{txt}
+                    {res} {ralign 12:{txt:(}0.00294465{txt:)}}    {ralign 12:{txt:(}0.00294893{txt:)}}    {ralign 12:{txt:(}0.00294993{txt:)}}   {txt}
 {hline 68}
 {res}mu_star                                                             {txt}
-{txt}Constant            {res}    -1.751950***    -1.751950***    -1.751950***{txt}
-                    {res} {ralign 12:{txt:(}0.0158996{txt:)}}    {ralign 12:{txt:(}0.0159190{txt:)}}    {ralign 12:{txt:(}0.0159045{txt:)}}   {txt}
+{txt}Constant            {res}    -1.734928***    -1.734928***    -1.734928***{txt}
+                    {res} {ralign 12:{txt:(}0.0106916{txt:)}}    {ralign 12:{txt:(}0.0106910{txt:)}}    {ralign 12:{txt:(}0.0106860{txt:)}}   {txt}
 {txt}{hline 68}
-{txt}Observations        {res}      2250000         2250000         2250000   {txt}
+{txt}Observations        {res}      4950000         4950000         4950000   {txt}
 {txt}{hline 68}
 {txt}Standard errors in parentheses
 {txt}* p<0.05, ** p<0.01, *** p<0.001
@@ -760,13 +767,13 @@ Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
 {com}. 
 . 
 . display                          mreldif(muRRM_V, muRRM_V_robust)
-{res}6.174e-07
+{res}2.520e-08
 {txt}
 {com}. rcof "noisily assert mreldif(muRRM_V, muRRM_V_robust) < ${c -(}tol{c )-}" == 0
 {txt}
 {com}. 
 . display                          mreldif(muRRM_V, muRRM_V_cluster)
-{res}1.540e-07
+{res}1.193e-07
 {txt}
 {com}. rcof "noisily assert mreldif(muRRM_V, muRRM_V_cluster) < ${c -(}tol{c )-}" == 0
 {txt}
@@ -786,7 +793,7 @@ Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
 {com}. set obs ${c -(}n_obs{c )-}
 {txt}{p}
 number of observations (_N)  was 0,
-now 250,000
+now 550,000
 {p_end}
 
 {com}. gen cluster_id = _n
@@ -794,7 +801,7 @@ now 250,000
 {com}. local n_cluster=3
 {txt}
 {com}. expand `n_cluster'
-{txt}(500,000 observations created)
+{txt}(1,100,000 observations created)
 
 {com}. sort cluster_id
 {txt}
@@ -803,7 +810,7 @@ now 250,000
 {com}. local n_choices =3
 {txt}
 {com}. expand `n_choices'
-{txt}(1,500,000 observations created)
+{txt}(3,300,000 observations created)
 
 {com}. bys id : gen alternative = _n
 {txt}
@@ -841,16 +848,16 @@ now 250,000
 {res}
 {txt}PRRM: Pure Random Regret Minimization Model
 
-Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
-{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   2250000
-{txt}{col 48}Wald chi2(2){col 67}= {res} 251413.20
-{txt}Log likelihood = {res}-298058.39{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+Case ID variable: id{col 48}Number of cases{col 67}= {res}   1650000
+{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   4950000
+{txt}{col 48}Wald chi2(2){col 67}= {res} 553174.35
+{txt}Log likelihood = {res}-655381.15{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
 {txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
 {hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {res}choice       {txt}{c |}
-{space 9}_x1 {c |}{col 14}{res}{space 2} 1.001469{col 26}{space 2} .0023652{col 37}{space 1}  423.42{col 46}{space 3}0.000{col 54}{space 4}  .996833{col 67}{space 3} 1.006104
-{txt}{space 9}_x2 {c |}{col 14}{res}{space 2}-1.998668{col 26}{space 2}  .004145{col 37}{space 1} -482.19{col 46}{space 3}0.000{col 54}{space 4}-2.006792{col 67}{space 3}-1.990544
+{space 9}_x1 {c |}{col 14}{res}{space 2} 1.000236{col 26}{space 2} .0015951{col 37}{space 1}  627.05{col 46}{space 3}0.000{col 54}{space 4} .9971091{col 67}{space 3} 1.003362
+{txt}{space 9}_x2 {c |}{col 14}{res}{space 2} -1.99714{col 26}{space 2} .0027909{col 37}{space 1} -715.59{col 46}{space 3}0.000{col 54}{space 4} -2.00261{col 67}{space 3} -1.99167
 {txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 The Pure-RRM uses a transformation of the original regressors using options
 positive() and negative() as detailed in {browse "https://www.sciencedirect.com/science/article/pii/S0965856415000166":S. van Cranenburgh et. al (2015)}
@@ -869,17 +876,17 @@ Afterward, randregret invokes clogit using these transormed regresors
 {res}
 {txt}PRRM: Pure Random Regret Minimization Model
 
-Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
-{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   2250000
-{txt}{col 48}Wald chi2(2){col 67}= {res} 251808.87
-{txt}Log likelihood = {res}-298058.39{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+Case ID variable: id{col 48}Number of cases{col 67}= {res}   1650000
+{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   4950000
+{txt}{col 48}Wald chi2(2){col 67}= {res} 552592.68
+{txt}Log likelihood = {res}-655381.15{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
 {txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {col 14}{c |}{col 26}    Robust
 {col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
 {hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {res}choice       {txt}{c |}
-{space 9}_x1 {c |}{col 14}{res}{space 2} 1.001469{col 26}{space 2} .0023603{col 37}{space 1}  424.30{col 46}{space 3}0.000{col 54}{space 4} .9968426{col 67}{space 3} 1.006095
-{txt}{space 9}_x2 {c |}{col 14}{res}{space 2}-1.998668{col 26}{space 2} .0041453{col 37}{space 1} -482.15{col 46}{space 3}0.000{col 54}{space 4}-2.006793{col 67}{space 3}-1.990544
+{space 9}_x1 {c |}{col 14}{res}{space 2} 1.000236{col 26}{space 2} .0015953{col 37}{space 1}  626.98{col 46}{space 3}0.000{col 54}{space 4} .9971088{col 67}{space 3} 1.003362
+{txt}{space 9}_x2 {c |}{col 14}{res}{space 2} -1.99714{col 26}{space 2}  .002793{col 37}{space 1} -715.06{col 46}{space 3}0.000{col 54}{space 4}-2.002614{col 67}{space 3}-1.991666
 {txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 The Pure-RRM uses a transformation of the original regressors using options
 positive() and negative() as detailed in {browse "https://www.sciencedirect.com/science/article/pii/S0965856415000166":S. van Cranenburgh et. al (2015)}
@@ -896,18 +903,18 @@ Afterward, randregret invokes clogit using these transormed regresors
 {res}
 {txt}PRRM: Pure Random Regret Minimization Model
 
-Case ID variable: id{col 48}Number of cases{col 67}= {res}    750000
-{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   2250000
-{txt}{col 48}Wald chi2(2){col 67}= {res} 251161.05
-{txt}Log likelihood = {res}-298058.39{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
-{txt}{ralign 78:(Std. Err. adjusted for {res:250,000} clusters in cluster_id)}
+Case ID variable: id{col 48}Number of cases{col 67}= {res}   1650000
+{txt}Alternative variable: alternative{col 48}Number of obs{col 67}= {res}   4950000
+{txt}{col 48}Wald chi2(2){col 67}= {res} 552505.49
+{txt}Log likelihood = {res}-655381.15{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{ralign 78:(Std. Err. adjusted for {res:550,000} clusters in cluster_id)}
 {hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {col 14}{c |}{col 26}    Robust
 {col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
 {hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 {res}choice       {txt}{c |}
-{space 9}_x1 {c |}{col 14}{res}{space 2} 1.001469{col 26}{space 2} .0023644{col 37}{space 1}  423.56{col 46}{space 3}0.000{col 54}{space 4} .9968345{col 67}{space 3} 1.006103
-{txt}{space 9}_x2 {c |}{col 14}{res}{space 2}-1.998668{col 26}{space 2} .0041482{col 37}{space 1} -481.81{col 46}{space 3}0.000{col 54}{space 4}-2.006799{col 67}{space 3}-1.990538
+{space 9}_x1 {c |}{col 14}{res}{space 2} 1.000236{col 26}{space 2} .0015961{col 37}{space 1}  626.66{col 46}{space 3}0.000{col 54}{space 4} .9971072{col 67}{space 3} 1.003364
+{txt}{space 9}_x2 {c |}{col 14}{res}{space 2} -1.99714{col 26}{space 2} .0027928{col 37}{space 1} -715.10{col 46}{space 3}0.000{col 54}{space 4}-2.002614{col 67}{space 3}-1.991666
 {txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
 The Pure-RRM uses a transformation of the original regressors using options
 positive() and negative() as detailed in {browse "https://www.sciencedirect.com/science/article/pii/S0965856415000166":S. van Cranenburgh et. al (2015)}
@@ -924,13 +931,13 @@ Afterward, randregret invokes clogit using these transormed regresors
 {txt}                                p              pR              pC   
 {txt}{hline 68}
 {res}choice                                                              {txt}
-{txt}_x1                 {res}     1.001469***     1.001469***     1.001469***{txt}
-                    {res} {ralign 12:{txt:(}0.00236517{txt:)}}    {ralign 12:{txt:(}0.00236028{txt:)}}    {ralign 12:{txt:(}0.00236442{txt:)}}   {txt}
+{txt}_x1                 {res}     1.000236***     1.000236***     1.000236***{txt}
+                    {res} {ralign 12:{txt:(}0.00159515{txt:)}}    {ralign 12:{txt:(}0.00159533{txt:)}}    {ralign 12:{txt:(}0.00159614{txt:)}}   {txt}
 
-{txt}_x2                 {res}    -1.998668***    -1.998668***    -1.998668***{txt}
-                    {res} {ralign 12:{txt:(}0.00414497{txt:)}}    {ralign 12:{txt:(}0.00414529{txt:)}}    {ralign 12:{txt:(}0.00414824{txt:)}}   {txt}
+{txt}_x2                 {res}    -1.997140***    -1.997140***    -1.997140***{txt}
+                    {res} {ralign 12:{txt:(}0.00279092{txt:)}}    {ralign 12:{txt:(}0.00279295{txt:)}}    {ralign 12:{txt:(}0.00279282{txt:)}}   {txt}
 {txt}{hline 68}
-{txt}Observations        {res}      2250000         2250000         2250000   {txt}
+{txt}Observations        {res}      4950000         4950000         4950000   {txt}
 {txt}{hline 68}
 {txt}Standard errors in parentheses
 {txt}* p<0.05, ** p<0.01, *** p<0.001
@@ -942,13 +949,13 @@ Afterward, randregret invokes clogit using these transormed regresors
 {res}{txt}
 {com}. 
 . display                          mreldif(PRRM_V, PRRM_V_robust)
-{res}2.311e-08
+{res}1.135e-08
 {txt}
 {com}. rcof "noisily assert mreldif(PRRM_V, PRRM_V_robust) < ${c -(}tol{c )-}" == 0
 {txt}
 {com}. 
 . display                          mreldif(PRRM_V, PRRM_V_cluster)
-{res}2.715e-08
+{res}1.061e-08
 {txt}
 {com}. rcof "noisily assert mreldif(PRRM_V, PRRM_V_cluster) < ${c -(}tol{c )-}" == 0
 {txt}

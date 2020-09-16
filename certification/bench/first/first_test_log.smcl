@@ -9,7 +9,7 @@ Revision 23 Aug 2019
 Copyright 1985-2019 StataCorp LLC
 
 Total physical memory:     {res}  64.00 GB
-{txt}Available physical memory: {res}  14.72 GB
+{txt}Available physical memory: {res}  59.14 GB
 
 Single-user 4-core Stata perpetual license:
        Serial number:  501606271320
@@ -34,8 +34,10 @@ Single-user 4-core Stata perpetual license:
 {txt}
 {com}. which randregret
 {txt}d:\users\u0133260\ado\plus\r\randregret.ado
-{res}*! randregret 1.0.0 26Oct2020
-*! author aagv
+{res}*! version 1.0.0  11Sep2020
+*! [aut & dev]  Álvaro A. Gutiérrez Vargas
+*! [aut]                Michel Meulders
+*! [aut]                Martina Vandebroek 
 {txt}
 {com}. 
 . 

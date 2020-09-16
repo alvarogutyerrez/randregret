@@ -21,7 +21,7 @@ which randregret_pure
 * pure 		= 2 (pure)attributes  
 
 
-global n_obs = 5000
+global n_obs = 2500
 global n_rep = 100
 
 

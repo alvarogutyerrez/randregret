@@ -29,7 +29,7 @@ ssc install estout
 
 * pure 		= 2 (pure)attributes -> b = (1,-2)  
 
-global n_obs = 250000
+global n_obs = 550000
 global tol = 1e-4
 
 

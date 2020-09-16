@@ -9,7 +9,7 @@ Revision 23 Aug 2019
 Copyright 1985-2019 StataCorp LLC
 
 Total physical memory:     {res}  64.00 GB
-{txt}Available physical memory: {res}  14.73 GB
+{txt}Available physical memory: {res}  59.32 GB
 
 Single-user 4-core Stata perpetual license:
        Serial number:  501606271320
@@ -34,13 +34,17 @@ Single-user 4-core Stata perpetual license:
 {txt}
 {com}. which randregret
 {txt}d:\users\u0133260\ado\plus\r\randregret.ado
-{res}*! randregret 1.0.0 26Oct2020
-*! author aagv
+{res}*! version 1.0.0  11Sep2020
+*! [aut & dev]  Álvaro A. Gutiérrez Vargas
+*! [aut]                Michel Meulders
+*! [aut]                Martina Vandebroek 
 {txt}
 {com}. which randregret_pure
 {txt}d:\users\u0133260\ado\plus\r\randregret_pure.ado
-{res}*! randregret 1.0.0 26Oct2020
-*! author aagv
+{res}*! version 1.0.0  11Sep2020
+*! [aut & dev]  Álvaro A. Gutiérrez Vargas
+*! [aut]                Michel Meulders
+*! [aut]                Martina Vandebroek 
 {txt}
 {com}. 
 . *Simulated data to recover parameters  
@@ -57,7 +61,7 @@ Single-user 4-core Stata perpetual license:
 . * pure          = 2 (pure)attributes  
 . 
 . 
-. global n_obs = 5000
+. global n_obs = 2500
 {txt}
 {com}. global n_rep = 100
 {txt}
@@ -186,8 +190,8 @@ Simulations ({res}100{txt})
 
 {txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
 {hline 13}{c +}{hline 57}
-{space 4}RRM_b_x1 {c |}{res}        100    1.001393     .030209    .941564   1.084654
-{txt}{space 4}RRM_b_x2 {c |}{res}        100   -2.004595    .0563773  -2.183858  -1.891597
+{space 4}RRM_b_x1 {c |}{res}        100    .9974765    .0384987   .8978078   1.106472
+{txt}{space 4}RRM_b_x2 {c |}{res}        100    -2.00145    .0741174  -2.172321  -1.842945
 {txt}
 {com}. 
 . 
@@ -248,9 +252,9 @@ Simulations ({res}100{txt})
 
 {txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
 {hline 13}{c +}{hline 57}
-{space 4}RRM_b_x1 {c |}{res}        100    1.002419     .048533    .871241   1.104055
-{txt}{space 4}RRM_b_x2 {c |}{res}        100   -2.007831    .1064924   -2.25289  -1.696705
-{txt}{space 2}_eq5_gamma {c |}{res}        100     .506461    .0785494   .2997491   .7085789
+{space 4}RRM_b_x1 {c |}{res}        100    1.007199    .0846908   .8416456   1.230514
+{txt}{space 4}RRM_b_x2 {c |}{res}        100   -2.016881    .1850163  -2.540756  -1.614049
+{txt}{space 2}_eq5_gamma {c |}{res}        100    .5141545    .1255901   .2686664   .8649077
 {txt}
 {com}.                         
 .                         
@@ -292,7 +296,7 @@ Simulations ({res}100{txt})
 Simulations ({res}100{txt})
 {hline 4}{c +}{hline 3} 1 {hline 3}{c +}{hline 3} 2 {hline 3}{c +}{hline 3} 3 {hline 3}{c +}{hline 3} 4 {hline 3}{c +}{hline 3} 5 
 ..................................................    50
-..................................................   100
+....{err}x{txt}.............................................   100
 
 {com}. 
 . graph hbox RRM_b_x1 RRM_b_x2 _eq5_mu,   ///
@@ -310,9 +314,9 @@ Simulations ({res}100{txt})
 
 {txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
 {hline 13}{c +}{hline 57}
-{space 4}RRM_b_x1 {c |}{res}        100    .9999975    .0307767    .939611   1.075148
-{txt}{space 4}RRM_b_x2 {c |}{res}        100   -2.003108    .0525682  -2.167309  -1.905331
-{txt}{space 5}_eq5_mu {c |}{res}        100    .7553071    .1242996   .4737067   1.064327
+{space 4}RRM_b_x1 {c |}{res}         99    .9971532    .0395879   .9023466   1.097794
+{txt}{space 4}RRM_b_x2 {c |}{res}         99   -2.001302    .0725214  -2.186921  -1.832578
+{txt}{space 5}_eq5_mu {c |}{res}         99    .7486424    .1645699   .3561482   1.159874
 {txt}
 {com}.                         
 .                         
@@ -376,8 +380,8 @@ Simulations ({res}100{txt})
 
 {txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
 {hline 13}{c +}{hline 57}
-{space 1}choice_b_x1 {c |}{res}        100    -.998902    .0285337   -1.06947  -.9262747
-{txt}{space 1}choice_b_x2 {c |}{res}        100    1.995641    .0512654   1.872805   2.121612
+{space 1}choice_b_x1 {c |}{res}        100   -1.002235    .0405708  -1.086034   -.897648
+{txt}{space 1}choice_b_x2 {c |}{res}        100    1.998822    .0711137   1.841813   2.134127
 {txt}
 {com}. 
 . 
