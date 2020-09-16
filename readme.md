@@ -92,7 +92,7 @@ randregret choice  , neg(tc tt) gr(obs) alt(altern) rrmfn(pure) cluster(id) noco
 
 ### Further information 
 
-Professor [Sander van Cranenburgh](https://www.tudelft.nl/en/tpm/about-the-faculty/departments/engineering-systems-and-services/people/assistant-professors/drir-s-sander-van-cranenburgh/) has a [website](https://www.advancedrrmmodels.com/) where you can find additional information about RRM models together with routines in other languages to fit them (R, Python, and Matlab included). A dofile that replicated his results can be found [here](https://github.com/alvarogutyerrez/randregret/blob/master/examples/randregret_replication_Sanders_routines.do).  
+Professor [Sander van Cranenburgh](https://www.tudelft.nl/en/tpm/about-the-faculty/departments/engineering-systems-and-services/people/assistant-professors/drir-s-sander-van-cranenburgh/) has a [website](https://www.advancedrrmmodels.com/) where you can find additional information about RRM models together with routines in other languages to fit them (R, Python, and Matlab included). A dofile that replicated professor Sander's results can be found [here](https://github.com/alvarogutyerrez/randregret/blob/master/examples/randregret_replication_Sanders_routines.do).  
 
 
 
