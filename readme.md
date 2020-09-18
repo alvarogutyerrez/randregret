@@ -84,7 +84,7 @@ randregret choice  , neg(tc tt) gr(obs) alt(altern) rrmfn(pure) cluster(id) noco
 
 ### Conferences
 
-> *   [Stata Meeting 2020, London, UK](https://events.timberlake.co.uk/event/2020-stata-conference). Slides available [here](https://www.dropbox.com/s/nke1edawl3dnfy0/randregret_London2020.pdf). 
+> *   [Stata Meeting 2020, London, UK](https://events.timberlake.co.uk/event/2020-stata-conference). Slides available [here](http://repec.org/usug2020/Gutierrez_u20.pdf). 
 
 
 > *   [Stata Meeting 2020, Bern, Switzerland](https://ritme.com/CH-de/ritme/unsere-neuigkeiten/2020-swiss-stata-conference/). Slides are coming soon. 
