@@ -1,7 +1,7 @@
 ## *```randregret```*: A command for fitting random regret minimization models using Stata 
 
 ```
-*! randregret 1.0.0 26Oct2020
+*! randregret 1.1.0 24Dec2020
 *! author aagv
 
 /***********************************************************
