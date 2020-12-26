@@ -33,7 +33,6 @@ list obs altern choice id cs tt tc in 1/12, sepby(obs)
 rcof "noisily randregret choice  tt tc ,   altern(altern) gr(obs) rrm(classic)   tech(bhhh) nocons" == 498
 
 
-
 //---- Check: -group()- & -alternative()-  ----//
 
 *variable group() needs to be numeric 
@@ -170,7 +169,58 @@ matrix init = J(1,5,1)
 rcof "noisily randregret choice  tc tt , from(init)  altern(altern) gr(obs) rrm(mu) iter(0)  show" == 0
 
 
+///----------------------------------------------------////
+///        Tests from version 1.1.0 onwards            ////
+///----------------------------------------------------////
 
+//  Check that dependent variable is not part of the regressors 
+rcof "noisily randregret choice choice  tc tt , from(init)  altern(altern) gr(obs) rrm(gene) iter(0)  show" == 498
+rcof "noisily randregret choice choice  tc tt , from(init)  altern(altern) gr(obs) rrm(classic) iter(0)  show" == 498
+rcof "noisily randregret choice choice  tc tt , from(init)  altern(altern) gr(obs) rrm(mu) iter(0)  show" == 498
+
+
+// The variable choice is specified to have both positive and negative coefficients.
+rcof "noisily randregret choice ,  positive( tc) negative( tc)  altern(altern) gr(obs) rrm(pure) iter(0)  " == 498
+//  The dependent variable has been used as explanatory variable inside positive() or negative()."
+rcof "noisily randregret choice ,  positive( choice ) negative( tc)  altern(altern) gr(obs) rrm(pure) iter(0)  " == 498
+//  The dependent variable has been used as explanatory variable inside positive() or negative()."
+rcof "noisily randregret choice ,  positive( tc ) negative( choice)  altern(altern) gr(obs) rrm(pure) iter(0)  " == 498
+
+// Omitted regressors when clustering/robust standard errors. 
+gen tt_collinear = tt
+
+// Classic / Generalized / Mu (with and without constants.)
+// robust 
+rcof "noisily randregret choice  tc tt tt_collinear, r altern(altern) gr(obs) rrm(classic) iter(0)  " == 0
+rcof "noisily randregret choice  tc tt tt_collinear, r altern(altern) gr(obs) rrm(gene)    iter(0)  show" == 0
+rcof "noisily randregret choice  tc tt tt_collinear, r altern(altern) gr(obs) rrm(mu)      iter(0)  show" == 0
+
+rcof "noisily randregret choice  tc tt tt_collinear, r altern(altern) gr(obs) rrm(classic) iter(0)   nocons    " == 0
+rcof "noisily randregret choice  tc tt tt_collinear, r altern(altern) gr(obs) rrm(gene)    iter(0)  show nocons" == 0
+rcof "noisily randregret choice  tc tt tt_collinear, r altern(altern) gr(obs) rrm(mu)      iter(0)  show nocons" == 0
+
+
+// cluster
+rcof "noisily randregret choice  tc tt tt_collinear, cl(obs) altern(altern) gr(obs) rrm(classic)    " == 0
+rcof "noisily randregret choice  tc tt tt_collinear ,cl(obs) altern(altern) gr(obs) rrm(gene)   show" == 0
+rcof "noisily randregret choice  tc tt tt_collinear, cl(obs) altern(altern) gr(obs) rrm(mu)     show" == 0
+
+rcof "noisily randregret choice  tc tt tt_collinear, cl(obs) altern(altern) gr(obs) rrm(classic)     nocons" == 0
+rcof "noisily randregret choice  tc tt tt_collinear ,cl(obs) altern(altern) gr(obs) rrm(gene)   show nocons " == 0
+rcof "noisily randregret choice  tc tt tt_collinear, cl(obs) altern(altern) gr(obs) rrm(mu)     show nocons " == 0
+
+
+// Pure-RRM.
+*Preventing the user from typos. 
+//  The variable tc is specified twice in positive() option.
+rcof "noisily randregret choice ,  positive( tc tc )  altern(altern) gr(obs) rrm(pure) iter(0)  " == 498
+//  The variable tc is specified twice in negative() option.
+rcof "noisily randregret choice ,  negative( tc tc )  altern(altern) gr(obs) rrm(pure) iter(0)  " == 498
+
+//  Ready to omitte collinear regressors
+rcof "noisily randregret choice ,  negative( tt tt_collinear  )  altern(altern) gr(obs) rrm(pure) iter(0)  " == 0
+//  Ready to omitte collinear regressors
+rcof "noisily randregret choice ,  positive( tt tt_collinear  )  altern(altern) gr(obs) rrm(pure) iter(0)  " == 0
 
 
 

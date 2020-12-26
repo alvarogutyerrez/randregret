@@ -4,17 +4,17 @@
 {txt}
 {com}. about
 
-{txt}Stata/MP 16.0 for Windows (64-bit x86-64)
-Revision 23 Aug 2019
+{txt}Stata/MP 16.1 for Windows (64-bit x86-64)
+Revision 31 Mar 2020
 Copyright 1985-2019 StataCorp LLC
 
-Total physical memory:     {res}  64.00 GB
-{txt}Available physical memory: {res}  59.14 GB
+Total physical memory:     {res}  32.00 GB
+{txt}Available physical memory: {res}  18.90 GB
 
 Single-user 4-core Stata perpetual license:
        Serial number:  501606271320
          Licensed to:  Álvaro A. Gutiérrez Vargas
-                       Research Centre for Operations Research and Statistics
+                       Research Centre for Operations Research and Business Statistics (ORSTAT), KU Leuven
 {txt}
 {com}. 
 . 
@@ -33,8 +33,8 @@ Single-user 4-core Stata perpetual license:
 {com}. set more off
 {txt}
 {com}. which randregret
-{txt}d:\users\u0133260\ado\plus\r\randregret.ado
-{res}*! version 1.0.0  11Sep2020
+{txt}C:\Users\u0133260\ado\plus\r\randregret.ado
+{res}*! version 1.1.0  24Dec2020
 *! [aut & dev]  Álvaro A. Gutiérrez Vargas
 *! [aut]                Michel Meulders
 *! [aut]                Martina Vandebroek 
@@ -42,7 +42,7 @@ Single-user 4-core Stata perpetual license:
 {com}. 
 . 
 . cd data 
-{res}D:\users\u0133260\Documents\randregret_certification\certification\bench\first\data
+{res}C:\Users\u0133260\Dropbox\PhD\Thesis\THE_STATA_JOURNAL\randregret_github_repo\randregret\_versions\v1.1.0\certification\bench\first\data
 {txt}
 {com}. use VoT
 {txt}
@@ -125,7 +125,6 @@ Number of obs.                 {res}    1060   {txt}->{res}    3180
 {txt}
 {com}. 
 . 
-. 
 . //---- Check: -group()- & -alternative()-  ----//
 . 
 . *variable group() needs to be numeric 
@@ -168,7 +167,7 @@ Number of obs.                 {res}    1060   {txt}->{res}    3180
 . gen y_only_1= 1
 {txt}
 {com}. rcof "noisily randregret y_only_1  tt tc ,   altern(altern) gr(obs) rrm(classic)   nocons" == 498               
-{err}At least one group has more than one chosen alternative
+{err}At least one group has either more than one chosen alternative or none
 {txt}
 {com}. 
 . 
@@ -756,8 +755,642 @@ Warning: convergence not achieved
 
 {com}. 
 . 
+. ///----------------------------------------------------////
+> ///        Tests from version 1.1.0 onwards            ////
+> ///----------------------------------------------------////
+> 
+. //  Check that dependent variable is not part of the regressors 
+. rcof "noisily randregret choice choice  tc tt , from(init)  altern(altern) gr(obs) rrm(gene) iter(0)  show" == 498
+{err}The variable choice is specified both as response variable and as regressor.
+{txt}
+{com}. rcof "noisily randregret choice choice  tc tt , from(init)  altern(altern) gr(obs) rrm(classic) iter(0)  show" == 498
+{err}The variable choice is specified both as response variable and as regressor.
+{txt}
+{com}. rcof "noisily randregret choice choice  tc tt , from(init)  altern(altern) gr(obs) rrm(mu) iter(0)  show" == 498
+{err}The variable choice is specified both as response variable and as regressor.
+{txt}
+{com}. 
 . 
+. // The variable choice is specified to have both positive and negative coefficients.
+. rcof "noisily randregret choice ,  positive( tc) negative( tc)  altern(altern) gr(obs) rrm(pure) iter(0)  " == 498
+{err}The variable tc is specified to have both positive and negative coefficients.
+{txt}
+{com}. //  The dependent variable has been used as explanatory variable inside positive() or negative()."
+. rcof "noisily randregret choice ,  positive( choice ) negative( tc)  altern(altern) gr(obs) rrm(pure) iter(0)  " == 498
+{err}The variable choice has been used as dependent variable and explanatory variable inside positive() or negative().
+{txt}
+{com}. //  The dependent variable has been used as explanatory variable inside positive() or negative()."
+. rcof "noisily randregret choice ,  positive( tc ) negative( choice)  altern(altern) gr(obs) rrm(pure) iter(0)  " == 498
+{err}The variable choice has been used as dependent variable and explanatory variable inside positive() or negative().
+{txt}
+{com}. 
+. // Omitted regressors when clustering/robust standard errors. 
+. gen tt_collinear = tt
+{txt}
+{com}. 
+. // Classic / Generalized / Mu (with and without constants.)
+. // robust 
+. rcof "noisily randregret choice  tc tt tt_collinear, r altern(altern) gr(obs) rrm(classic) iter(0)  " == 0
+{txt}{hline 78}
+Fitting Classic RRM Model 
+{hline 78}
+{res}{txt}note: tt_collinear omitted because of collinearity
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -1164.529}  
+convergence not achieved
+{res}
+{txt}RRM: Classic Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(2){col 67}= {res}      0.00
+{txt}Log likelihood = {res} -1164.529{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    1.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}tc {c |}{col 14}{res}{space 2}        0{col 26}{space 2} .0668688{col 37}{space 1}    0.00{col 46}{space 3}1.000{col 54}{space 4}-.1310604{col 67}{space 3} .1310604
+{txt}{space 10}tt {c |}{col 14}{res}{space 2}        0{col 26}{space 2} .0174529{col 37}{space 1}    0.00{col 46}{space 3}1.000{col 54}{space 4} -.034207{col 67}{space 3}  .034207
+{txt}tt_collinear {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}ASC          {txt}{c |}
+{space 7}ASC_2 {c |}{col 14}{res}{space 2}        0{col 26}{space 2} .0782411{col 37}{space 1}    0.00{col 46}{space 3}1.000{col 54}{space 4}-.1533497{col 67}{space 3} .1533497
+{txt}{space 7}ASC_3 {c |}{col 14}{res}{space 2}        0{col 26}{space 2}  .073191{col 37}{space 1}    0.00{col 46}{space 3}1.000{col 54}{space 4}-.1434517{col 67}{space 3} .1434517
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+Warning: convergence not achieved
+
+{com}. rcof "noisily randregret choice  tc tt tt_collinear, r altern(altern) gr(obs) rrm(gene)    iter(0)  show" == 0
+{txt}{hline 78}
+Fitting Classic RRM for Initial Values
+{hline 78}
+{res}{txt}note: tt_collinear omitted because of collinearity
+{res}
+{txt}initial:{col 16}log likelihood = {res: -1164.529}
+alternative:{col 16}log likelihood = {res:-1180.2674}
+rescale:{col 16}log likelihood = {res:-1163.3619}
+rescale eq:{col 16}log likelihood = {res:-1121.1341}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1121.1341}  
+Iteration 1:{space 3}log likelihood = {res:-1113.6076}  
+Iteration 2:{space 3}log likelihood = {res:-1113.5986}  
+Iteration 3:{space 3}log likelihood = {res:-1113.5986}  
+{res}{txt}{hline 78}
+Fitting Conditional Logit as a Restricted Model (gamma=0) for LR test
+{hline 78}
+{hline 78}
+Fitting Generalized RRM Model 
+{hline 78}
+{res}{txt}note: tt_collinear omitted because of collinearity
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1114.6602}  
+convergence not achieved
+{res}
+{txt}GRRM: Generalized Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(2){col 67}= {res}     35.04
+{txt}Log likelihood = {res}-1114.6602{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}tc {c |}{col 14}{res}{space 2} -.389129{col 26}{space 2} .0671887{col 37}{space 1}   -5.79{col 46}{space 3}0.000{col 54}{space 4}-.5208164{col 67}{space 3}-.2574416
+{txt}{space 10}tt {c |}{col 14}{res}{space 2}-.0910313{col 26}{space 2} .0154222{col 37}{space 1}   -5.90{col 46}{space 3}0.000{col 54}{space 4}-.1212583{col 67}{space 3}-.0608042
+{txt}tt_collinear {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}ASC          {txt}{c |}
+{space 7}ASC_2 {c |}{col 14}{res}{space 2}-.1673341{col 26}{space 2} .0806727{col 37}{space 1}   -2.07{col 46}{space 3}0.038{col 54}{space 4}-.3254496{col 67}{space 3}-.0092185
+{txt}{space 7}ASC_3 {c |}{col 14}{res}{space 2} .0876183{col 26}{space 2} .0829421{col 37}{space 1}    1.06{col 46}{space 3}0.291{col 54}{space 4}-.0749452{col 67}{space 3} .2501818
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}gamma_star   {txt}{c |}
+{space 7}_cons {c |}{col 14}{res}{space 2}        0{col 26}{space 2} .8099367{col 37}{space 1}    0.00{col 46}{space 3}1.000{col 54}{space 4}-1.587447{col 67}{space 3} 1.587447
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+       gamma {c |}{col 14}{res}{space 2}       .5{col 26}{space 2} .2024842{col 54}{space 4} .1697434{col 67}{space 3} .8302566
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+Warning: convergence not achieved
+{txt}LR test of gamma=0: {help j_chibar##|_new:chibar2(01) = }{res}-7.2e-01{col 56}{txt}Prob >= chibar2 = {res}1.000
+{txt}LR test of gamma=1: {help j_chibar##|_new:chibar2(01) = }{res}-2.1e+00{col 56}{txt}Prob >= chibar2 = {res}1.000
+{txt}{hline 78}
+
+{com}. rcof "noisily randregret choice  tc tt tt_collinear, r altern(altern) gr(obs) rrm(mu)      iter(0)  show" == 0
+{txt}{hline 78}
+Fitting Classic RRM for Initial Values
+{hline 78}
+{res}{txt}note: tt_collinear omitted because of collinearity
+{res}
+{txt}initial:{col 16}log likelihood = {res: -1164.529}
+alternative:{col 16}log likelihood = {res:-1180.2674}
+rescale:{col 16}log likelihood = {res:-1163.3619}
+rescale eq:{col 16}log likelihood = {res:-1121.1341}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1121.1341}  
+Iteration 1:{space 3}log likelihood = {res:-1113.6076}  
+Iteration 2:{space 3}log likelihood = {res:-1113.5986}  
+Iteration 3:{space 3}log likelihood = {res:-1113.5986}  
+{res}{txt}{hline 78}
+Fitting muRRM Model
+{hline 78}
+{res}{txt}note: tt_collinear omitted because of collinearity
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1113.4836}  (not concave)
+convergence not achieved
+{res}
+{txt}muRRM: Mu-Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(2){col 67}= {res}     65.92
+{txt}Log likelihood = {res}-1113.4836{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}tc {c |}{col 14}{res}{space 2} -.389129{col 26}{space 2} .0479654{col 37}{space 1}   -8.11{col 46}{space 3}0.000{col 54}{space 4}-.4831394{col 67}{space 3}-.2951186
+{txt}{space 10}tt {c |}{col 14}{res}{space 2}-.0910313{col 26}{space 2} .0125371{col 37}{space 1}   -7.26{col 46}{space 3}0.000{col 54}{space 4}-.1156035{col 67}{space 3} -.066459
+{txt}tt_collinear {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}ASC          {txt}{c |}
+{space 7}ASC_2 {c |}{col 14}{res}{space 2}-.1673341{col 26}{space 2} .0767206{col 37}{space 1}   -2.18{col 46}{space 3}0.029{col 54}{space 4}-.3177036{col 67}{space 3}-.0169646
+{txt}{space 7}ASC_3 {c |}{col 14}{res}{space 2} .0876183{col 26}{space 2} .0800518{col 37}{space 1}    1.09{col 46}{space 3}0.274{col 54}{space 4}-.0692804{col 67}{space 3} .2445169
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}mu_star      {txt}{c |}
+{space 7}_cons {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+          mu {c |}{col 14}{res}{space 2}      2.5{col 26}{space 2}        .{col 54}{space 4}        .{col 67}{space 3}        .
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+Warning: convergence not achieved
+{txt}LR test of mu=1: chi2(1) ={res}0.23{col 56}{txt}Prob >= chibar2 = {res}0.632
+{txt}{hline 78}
+
+{com}. 
+. rcof "noisily randregret choice  tc tt tt_collinear, r altern(altern) gr(obs) rrm(classic) iter(0)   nocons    " == 0
+{txt}{hline 78}
+Fitting Classic RRM Model 
+{hline 78}
+{res}{txt}note: tt_collinear omitted because of collinearity
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -1164.529}  
+convergence not achieved
+{res}
+{txt}RRM: Classic Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(2){col 67}= {res}      0.00
+{txt}Log likelihood = {res} -1164.529{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    1.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}tc {c |}{col 14}{res}{space 2}        0{col 26}{space 2} .0663711{col 37}{space 1}    0.00{col 46}{space 3}1.000{col 54}{space 4}-.1300849{col 67}{space 3} .1300849
+{txt}{space 10}tt {c |}{col 14}{res}{space 2}        0{col 26}{space 2} .0172146{col 37}{space 1}    0.00{col 46}{space 3}1.000{col 54}{space 4}  -.03374{col 67}{space 3}   .03374
+{txt}tt_collinear {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+Warning: convergence not achieved
+
+{com}. rcof "noisily randregret choice  tc tt tt_collinear, r altern(altern) gr(obs) rrm(gene)    iter(0)  show nocons" == 0
+{txt}{hline 78}
+Fitting Classic RRM for Initial Values
+{hline 78}
+{res}{txt}note: tt_collinear omitted because of collinearity
+{res}
+{txt}initial:{col 16}log likelihood = {res: -1164.529}
+alternative:{col 16}log likelihood = {res:-1156.5784}
+rescale:{col 16}log likelihood = {res:  -1121.29}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:  -1121.29}  
+Iteration 1:{space 3}log likelihood = {res:-1118.4843}  
+Iteration 2:{space 3}log likelihood = {res:-1118.4784}  
+Iteration 3:{space 3}log likelihood = {res:-1118.4784}  
+{res}{txt}{hline 78}
+Fitting Conditional Logit as a Restricted Model (gamma=0) for LR test
+{hline 78}
+{hline 78}
+Fitting Generalized RRM Model 
+{hline 78}
+{res}{txt}note: tt_collinear omitted because of collinearity
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1120.7001}  
+convergence not achieved
+{res}
+{txt}GRRM: Generalized Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(2){col 67}= {res}     55.49
+{txt}Log likelihood = {res}-1120.7001{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}tc {c |}{col 14}{res}{space 2} -.417101{col 26}{space 2} .0578796{col 37}{space 1}   -7.21{col 46}{space 3}0.000{col 54}{space 4} -.530543{col 67}{space 3}-.3036591
+{txt}{space 10}tt {c |}{col 14}{res}{space 2} -.102813{col 26}{space 2} .0138142{col 37}{space 1}   -7.44{col 46}{space 3}0.000{col 54}{space 4}-.1298883{col 67}{space 3}-.0757377
+{txt}tt_collinear {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}gamma_star   {txt}{c |}
+{space 7}_cons {c |}{col 14}{res}{space 2}        0{col 26}{space 2} .5721854{col 37}{space 1}    0.00{col 46}{space 3}1.000{col 54}{space 4}-1.121463{col 67}{space 3} 1.121463
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+       gamma {c |}{col 14}{res}{space 2}       .5{col 26}{space 2} .1430463{col 54}{space 4} .2457401{col 67}{space 3} .7542599
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+Warning: convergence not achieved
+{txt}LR test of gamma=0: {help j_chibar##|_new:chibar2(01) = }{res}4.67{col 56}{txt}Prob >= chibar2 = {res}0.015
+{txt}LR test of gamma=1: {help j_chibar##|_new:chibar2(01) = }{res}-4.4e+00{col 56}{txt}Prob >= chibar2 = {res}1.000
+{txt}{hline 78}
+
+{com}. rcof "noisily randregret choice  tc tt tt_collinear, r altern(altern) gr(obs) rrm(mu)      iter(0)  show nocons" == 0
+{txt}{hline 78}
+Fitting Classic RRM for Initial Values
+{hline 78}
+{res}{txt}note: tt_collinear omitted because of collinearity
+{res}
+{txt}initial:{col 16}log likelihood = {res: -1164.529}
+alternative:{col 16}log likelihood = {res:-1156.5784}
+rescale:{col 16}log likelihood = {res:  -1121.29}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:  -1121.29}  
+Iteration 1:{space 3}log likelihood = {res:-1118.4843}  
+Iteration 2:{space 3}log likelihood = {res:-1118.4784}  
+Iteration 3:{space 3}log likelihood = {res:-1118.4784}  
+{res}{txt}{hline 78}
+Fitting muRRM Model
+{hline 78}
+{res}{txt}note: tt_collinear omitted because of collinearity
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1119.8154}  (not concave)
+convergence not achieved
+{res}
+{txt}muRRM: Mu-Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(2){col 67}= {res}     72.01
+{txt}Log likelihood = {res}-1119.8154{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}tc {c |}{col 14}{res}{space 2} -.417101{col 26}{space 2}  .049281{col 37}{space 1}   -8.46{col 46}{space 3}0.000{col 54}{space 4}  -.51369{col 67}{space 3}-.3205121
+{txt}{space 10}tt {c |}{col 14}{res}{space 2} -.102813{col 26}{space 2}  .012748{col 37}{space 1}   -8.07{col 46}{space 3}0.000{col 54}{space 4}-.1277986{col 67}{space 3}-.0778274
+{txt}tt_collinear {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}mu_star      {txt}{c |}
+{space 7}_cons {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+          mu {c |}{col 14}{res}{space 2}      2.5{col 26}{space 2}        .{col 54}{space 4}        .{col 67}{space 3}        .
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+Warning: convergence not achieved
+{txt}LR test of mu=1: chi2(1) ={res}-2.7e+00{col 56}{txt}Prob >= chibar2 = {res}1.000
+{txt}{hline 78}
+
+{com}. 
 . 
+. // cluster
+. rcof "noisily randregret choice  tc tt tt_collinear, cl(obs) altern(altern) gr(obs) rrm(classic)    " == 0
+{res}{txt}{hline 78}
+Fitting Classic RRM Model 
+{hline 78}
+{res}{txt}note: tt_collinear omitted because of collinearity
+{res}
+{txt}initial:{col 16}log likelihood = {res: -1164.529}
+alternative:{col 16}log likelihood = {res:-1180.2674}
+rescale:{col 16}log likelihood = {res:-1163.3619}
+rescale eq:{col 16}log likelihood = {res:-1121.1341}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1121.1341}  
+Iteration 1:{space 3}log likelihood = {res:-1113.6076}  
+Iteration 2:{space 3}log likelihood = {res:-1113.5986}  
+Iteration 3:{space 3}log likelihood = {res:-1113.5986}  
+{res}
+{txt}RRM: Classic Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(2){col 67}= {res}     90.89
+{txt}Log likelihood = {res}-1113.5986{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 34}(Std. Err. adjusted for {res} 1060{txt} clusters in obs)
+{res}{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}tc {c |}{col 14}{res}{space 2} -.389129{col 26}{space 2} .0409101{col 37}{space 1}   -9.51{col 46}{space 3}0.000{col 54}{space 4}-.4693113{col 67}{space 3}-.3089467
+{txt}{space 10}tt {c |}{col 14}{res}{space 2}-.0910313{col 26}{space 2} .0106161{col 37}{space 1}   -8.57{col 46}{space 3}0.000{col 54}{space 4}-.1118385{col 67}{space 3} -.070224
+{txt}tt_collinear {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}ASC          {txt}{c |}
+{space 7}ASC_2 {c |}{col 14}{res}{space 2}-.1673341{col 26}{space 2} .0769022{col 37}{space 1}   -2.18{col 46}{space 3}0.030{col 54}{space 4}-.3180596{col 67}{space 3}-.0166086
+{txt}{space 7}ASC_3 {c |}{col 14}{res}{space 2} .0876183{col 26}{space 2} .0817615{col 37}{space 1}    1.07{col 46}{space 3}0.284{col 54}{space 4}-.0726313{col 67}{space 3} .2478679
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. rcof "noisily randregret choice  tc tt tt_collinear ,cl(obs) altern(altern) gr(obs) rrm(gene)   show" == 0
+{res}{txt}{hline 78}
+Fitting Classic RRM for Initial Values
+{hline 78}
+{res}{txt}note: tt_collinear omitted because of collinearity
+{res}
+{txt}initial:{col 16}log likelihood = {res: -1164.529}
+alternative:{col 16}log likelihood = {res:-1180.2674}
+rescale:{col 16}log likelihood = {res:-1163.3619}
+rescale eq:{col 16}log likelihood = {res:-1121.1341}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1121.1341}  
+Iteration 1:{space 3}log likelihood = {res:-1113.6076}  
+Iteration 2:{space 3}log likelihood = {res:-1113.5986}  
+Iteration 3:{space 3}log likelihood = {res:-1113.5986}  
+{res}{txt}{hline 78}
+Fitting Conditional Logit as a Restricted Model (gamma=0) for LR test
+{hline 78}
+{hline 78}
+Fitting Generalized RRM Model 
+{hline 78}
+{res}{txt}note: tt_collinear omitted because of collinearity
+{res}
+{txt}initial:{col 16}log likelihood = {res:-1114.6602}
+rescale:{col 16}log likelihood = {res:-1114.6602}
+rescale eq:{col 16}log likelihood = {res:-1114.6602}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1114.6602}  
+Iteration 1:{space 3}log likelihood = {res:-1112.9034}  
+Iteration 2:{space 3}log likelihood = {res:-1112.8698}  
+Iteration 3:{space 3}log likelihood = {res:-1112.8697}  
+{res}
+{txt}GRRM: Generalized Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(2){col 67}= {res}     23.17
+{txt}Log likelihood = {res}-1112.8697{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 34}(Std. Err. adjusted for {res} 1060{txt} clusters in obs)
+{res}{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}tc {c |}{col 14}{res}{space 2}-.3206498{col 26}{space 2} .0670893{col 37}{space 1}   -4.78{col 46}{space 3}0.000{col 54}{space 4}-.4521425{col 67}{space 3}-.1891571
+{txt}{space 10}tt {c |}{col 14}{res}{space 2}-.0758217{col 26}{space 2} .0159085{col 37}{space 1}   -4.77{col 46}{space 3}0.000{col 54}{space 4}-.1070017{col 67}{space 3}-.0446416
+{txt}tt_collinear {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}ASC          {txt}{c |}
+{space 7}ASC_2 {c |}{col 14}{res}{space 2} -.183206{col 26}{space 2} .0789965{col 37}{space 1}   -2.32{col 46}{space 3}0.020{col 54}{space 4}-.3380363{col 67}{space 3}-.0283757
+{txt}{space 7}ASC_3 {c |}{col 14}{res}{space 2} .0949903{col 26}{space 2} .0813359{col 37}{space 1}    1.17{col 46}{space 3}0.243{col 54}{space 4}-.0644252{col 67}{space 3} .2544058
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}gamma_star   {txt}{c |}
+{space 7}_cons {c |}{col 14}{res}{space 2} .0098799{col 26}{space 2}  1.28044{col 37}{space 1}    0.01{col 46}{space 3}0.994{col 54}{space 4}-2.499736{col 67}{space 3} 2.519496
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+       gamma {c |}{col 14}{res}{space 2} .5024699{col 26}{space 2} .3201022{col 54}{space 4} .0758767{col 67}{space 3} .9254973
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{txt}LR test of gamma=0: {help j_chibar##|_new:chibar2(01) = }{res}2.86{col 56}{txt}Prob >= chibar2 = {res}0.046
+{txt}LR test of gamma=1: {help j_chibar##|_new:chibar2(01) = }{res}1.46{col 56}{txt}Prob >= chibar2 = {res}0.114
+{txt}{hline 78}
+
+{com}. rcof "noisily randregret choice  tc tt tt_collinear, cl(obs) altern(altern) gr(obs) rrm(mu)     show" == 0
+{res}{txt}{hline 78}
+Fitting Classic RRM for Initial Values
+{hline 78}
+{res}{txt}note: tt_collinear omitted because of collinearity
+{res}
+{txt}initial:{col 16}log likelihood = {res: -1164.529}
+alternative:{col 16}log likelihood = {res:-1180.2674}
+rescale:{col 16}log likelihood = {res:-1163.3619}
+rescale eq:{col 16}log likelihood = {res:-1121.1341}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1121.1341}  
+Iteration 1:{space 3}log likelihood = {res:-1113.6076}  
+Iteration 2:{space 3}log likelihood = {res:-1113.5986}  
+Iteration 3:{space 3}log likelihood = {res:-1113.5986}  
+{res}{txt}{hline 78}
+Fitting muRRM Model
+{hline 78}
+{res}{txt}note: tt_collinear omitted because of collinearity
+{res}
+{txt}initial:{col 16}log likelihood = {res:-1113.4836}
+rescale:{col 16}log likelihood = {res:-1113.4836}
+rescale eq:{col 16}log likelihood = {res:-1113.4836}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1113.4836}  (not concave)
+Iteration 1:{space 3}log likelihood = {res:-1113.1608}  
+Iteration 2:{space 3}log likelihood = {res:-1112.9395}  
+Iteration 3:{space 3}log likelihood = {res:-1112.9386}  
+Iteration 4:{space 3}log likelihood = {res:-1112.9386}  
+{res}
+{txt}muRRM: Mu-Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(2){col 67}= {res}     25.77
+{txt}Log likelihood = {res}-1112.9386{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 34}(Std. Err. adjusted for {res} 1060{txt} clusters in obs)
+{res}{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}tc {c |}{col 14}{res}{space 2} -.417101{col 26}{space 2} .0931484{col 37}{space 1}   -4.48{col 46}{space 3}0.000{col 54}{space 4}-.5996685{col 67}{space 3}-.2345336
+{txt}{space 10}tt {c |}{col 14}{res}{space 2}-.0986558{col 26}{space 2} .0256224{col 37}{space 1}   -3.85{col 46}{space 3}0.000{col 54}{space 4}-.1488749{col 67}{space 3}-.0484368
+{txt}tt_collinear {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}ASC          {txt}{c |}
+{space 7}ASC_2 {c |}{col 14}{res}{space 2}-.1831791{col 26}{space 2} .1423275{col 37}{space 1}   -1.29{col 46}{space 3}0.198{col 54}{space 4}-.4621359{col 67}{space 3} .0957777
+{txt}{space 7}ASC_3 {c |}{col 14}{res}{space 2} .0960949{col 26}{space 2} .1087856{col 37}{space 1}    0.88{col 46}{space 3}0.377{col 54}{space 4}-.1171209{col 67}{space 3} .3093108
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}mu_star      {txt}{c |}
+{space 7}_cons {c |}{col 14}{res}{space 2}-.4915455{col 26}{space 2} 5.434016{col 37}{space 1}   -0.09{col 46}{space 3}0.928{col 54}{space 4}-11.14202{col 67}{space 3} 10.15893
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+          mu {c |}{col 14}{res}{space 2} 1.897648{col 26}{space 2} 6.398198{col 54}{space 4} .0000725{col 67}{space 3} 4.999806
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{txt}LR test of mu=1: chi2(1) ={res}1.32{col 56}{txt}Prob >= chibar2 = {res}0.251
+{txt}{hline 78}
+
+{com}. 
+. rcof "noisily randregret choice  tc tt tt_collinear, cl(obs) altern(altern) gr(obs) rrm(classic)     nocons" == 0
+{res}{txt}{hline 78}
+Fitting Classic RRM Model 
+{hline 78}
+{res}{txt}note: tt_collinear omitted because of collinearity
+{res}
+{txt}initial:{col 16}log likelihood = {res: -1164.529}
+alternative:{col 16}log likelihood = {res:-1156.5784}
+rescale:{col 16}log likelihood = {res:  -1121.29}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:  -1121.29}  
+Iteration 1:{space 3}log likelihood = {res:-1118.4843}  
+Iteration 2:{space 3}log likelihood = {res:-1118.4784}  
+Iteration 3:{space 3}log likelihood = {res:-1118.4784}  
+{res}
+{txt}RRM: Classic Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(2){col 67}= {res}    109.73
+{txt}Log likelihood = {res}-1118.4784{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 34}(Std. Err. adjusted for {res} 1060{txt} clusters in obs)
+{res}{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}tc {c |}{col 14}{res}{space 2} -.417101{col 26}{space 2}   .04057{col 37}{space 1}  -10.28{col 46}{space 3}0.000{col 54}{space 4}-.4966167{col 67}{space 3}-.3375854
+{txt}{space 10}tt {c |}{col 14}{res}{space 2} -.102813{col 26}{space 2} .0103028{col 37}{space 1}   -9.98{col 46}{space 3}0.000{col 54}{space 4}-.1230061{col 67}{space 3}-.0826199
+{txt}tt_collinear {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. rcof "noisily randregret choice  tc tt tt_collinear ,cl(obs) altern(altern) gr(obs) rrm(gene)   show nocons " == 0
+{res}{txt}{hline 78}
+Fitting Classic RRM for Initial Values
+{hline 78}
+{res}{txt}note: tt_collinear omitted because of collinearity
+{res}
+{txt}initial:{col 16}log likelihood = {res: -1164.529}
+alternative:{col 16}log likelihood = {res:-1156.5784}
+rescale:{col 16}log likelihood = {res:  -1121.29}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:  -1121.29}  
+Iteration 1:{space 3}log likelihood = {res:-1118.4843}  
+Iteration 2:{space 3}log likelihood = {res:-1118.4784}  
+Iteration 3:{space 3}log likelihood = {res:-1118.4784}  
+{res}{txt}{hline 78}
+Fitting Conditional Logit as a Restricted Model (gamma=0) for LR test
+{hline 78}
+{hline 78}
+Fitting Generalized RRM Model 
+{hline 78}
+{res}{txt}note: tt_collinear omitted because of collinearity
+{res}
+{txt}initial:{col 16}log likelihood = {res:-1120.7001}
+rescale:{col 16}log likelihood = {res:-1120.7001}
+rescale eq:{col 16}log likelihood = {res:-1120.7001}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1120.7001}  
+Iteration 1:{space 3}log likelihood = {res:-1118.5366}  
+Iteration 2:{space 3}log likelihood = {res:-1118.3484}  
+Iteration 3:{space 3}log likelihood = {res:-1118.3307}  
+Iteration 4:{space 3}log likelihood = {res:-1118.3302}  
+Iteration 5:{space 3}log likelihood = {res:-1118.3302}  
+{res}
+{txt}GRRM: Generalized Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(2){col 67}= {res}     45.65
+{txt}Log likelihood = {res}-1118.3302{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 34}(Std. Err. adjusted for {res} 1060{txt} clusters in obs)
+{res}{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}tc {c |}{col 14}{res}{space 2}-.3904872{col 26}{space 2} .0600622{col 37}{space 1}   -6.50{col 46}{space 3}0.000{col 54}{space 4}-.5082069{col 67}{space 3}-.2727676
+{txt}{space 10}tt {c |}{col 14}{res}{space 2}-.0967528{col 26}{space 2}  .014335{col 37}{space 1}   -6.75{col 46}{space 3}0.000{col 54}{space 4}-.1248488{col 67}{space 3}-.0686567
+{txt}tt_collinear {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}gamma_star   {txt}{c |}
+{space 7}_cons {c |}{col 14}{res}{space 2} 1.291135{col 26}{space 2} 1.990381{col 37}{space 1}    0.65{col 46}{space 3}0.517{col 54}{space 4}-2.609941{col 67}{space 3}  5.19221
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+       gamma {c |}{col 14}{res}{space 2} .7843392{col 26}{space 2} .3366754{col 54}{space 4} .0685014{col 67}{space 3}  .994471
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{txt}LR test of gamma=0: {help j_chibar##|_new:chibar2(01) = }{res}9.41{col 56}{txt}Prob >= chibar2 = {res}0.001
+{txt}LR test of gamma=1: {help j_chibar##|_new:chibar2(01) = }{res}0.30{col 56}{txt}Prob >= chibar2 = {res}0.293
+{txt}{hline 78}
+
+{com}. rcof "noisily randregret choice  tc tt tt_collinear, cl(obs) altern(altern) gr(obs) rrm(mu)     show nocons " == 0
+{res}{txt}{hline 78}
+Fitting Classic RRM for Initial Values
+{hline 78}
+{res}{txt}note: tt_collinear omitted because of collinearity
+{res}
+{txt}initial:{col 16}log likelihood = {res: -1164.529}
+alternative:{col 16}log likelihood = {res:-1156.5784}
+rescale:{col 16}log likelihood = {res:  -1121.29}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:  -1121.29}  
+Iteration 1:{space 3}log likelihood = {res:-1118.4843}  
+Iteration 2:{space 3}log likelihood = {res:-1118.4784}  
+Iteration 3:{space 3}log likelihood = {res:-1118.4784}  
+{res}{txt}{hline 78}
+Fitting muRRM Model
+{hline 78}
+{res}{txt}note: tt_collinear omitted because of collinearity
+{res}
+{txt}initial:{col 16}log likelihood = {res:-1119.8154}
+rescale:{col 16}log likelihood = {res:-1119.8154}
+rescale eq:{col 16}log likelihood = {res:-1119.8154}
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-1119.8154}  (not concave)
+Iteration 1:{space 3}log likelihood = {res:-1118.4346}  
+Iteration 2:{space 3}log likelihood = {res:-1118.3965}  
+Iteration 3:{space 3}log likelihood = {res:-1118.3965}  
+{res}
+{txt}muRRM: Mu-Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(2){col 67}= {res}     75.71
+{txt}Log likelihood = {res}-1118.3965{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 34}(Std. Err. adjusted for {res} 1060{txt} clusters in obs)
+{res}{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}RRM          {txt}{c |}
+{space 10}tc {c |}{col 14}{res}{space 2} -.428041{col 26}{space 2} .0492121{col 37}{space 1}   -8.70{col 46}{space 3}0.000{col 54}{space 4}-.5244949{col 67}{space 3}-.3315872
+{txt}{space 10}tt {c |}{col 14}{res}{space 2}-.1059437{col 26}{space 2} .0130989{col 37}{space 1}   -8.09{col 46}{space 3}0.000{col 54}{space 4} -.131617{col 67}{space 3}-.0802704
+{txt}tt_collinear {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}mu_star      {txt}{c |}
+{space 7}_cons {c |}{col 14}{res}{space 2}-1.167909{col 26}{space 2} .5527361{col 37}{space 1}   -2.11{col 46}{space 3}0.035{col 54}{space 4}-2.251252{col 67}{space 3} -.084566
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+          mu {c |}{col 14}{res}{space 2} 1.186166{col 26}{space 2} .5000979{col 54}{space 4} .4762077{col 67}{space 3} 2.394355
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{txt}LR test of mu=1: chi2(1) ={res}0.16{col 56}{txt}Prob >= chibar2 = {res}0.686
+{txt}{hline 78}
+
+{com}. 
+. 
+. // Pure-RRM.
+. *Preventing the user from typos. 
+. //  The variable tc is specified twice in positive() option.
+. rcof "noisily randregret choice ,  positive( tc tc )  altern(altern) gr(obs) rrm(pure) iter(0)  " == 498
+{err}The variable tc is specified twice in positive() option.
+{txt}
+{com}. //  The variable tc is specified twice in negative() option.
+. rcof "noisily randregret choice ,  negative( tc tc )  altern(altern) gr(obs) rrm(pure) iter(0)  " == 498
+{err}The variable tc is specified twice in negative() option.
+{txt}
+{com}. 
+. //  Ready to omitte collinear regressors
+. rcof "noisily randregret choice ,  negative( tt tt_collinear  )  altern(altern) gr(obs) rrm(pure) iter(0)  " == 0
+{res}
+{txt}PRRM: Pure Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(1){col 67}= {res}      0.04
+{txt}Log likelihood = {res}-1152.8588{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.8414
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}choice       {txt}{c |}
+{space 10}tt {c |}{col 14}{res}{space 2}-.0009547{col 26}{space 2} .0047697{col 37}{space 1}   -0.20{col 46}{space 3}0.841{col 54}{space 4}-.0103032{col 67}{space 3} .0083937
+{txt}tt_collinear {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 7}ASC_2 {c |}{col 14}{res}{space 2}-.1939093{col 26}{space 2} .0734512{col 37}{space 1}   -2.64{col 46}{space 3}0.008{col 54}{space 4}-.3378711{col 67}{space 3}-.0499475
+{txt}{space 7}ASC_3 {c |}{col 14}{res}{space 2} .1636078{col 26}{space 2} .0804842{col 37}{space 1}    2.03{col 46}{space 3}0.042{col 54}{space 4} .0058616{col 67}{space 3}  .321354
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+The Pure-RRM uses a transformation of the original regressors using options
+positive() and negative() as detailed in {browse "https://www.sciencedirect.com/science/article/pii/S0965856415000166":S. van Cranenburgh et. al (2015)}
+Afterward, randregret invokes clogit using these transormed regresors
+{hline 78}
+
+{com}. //  Ready to omitte collinear regressors
+. rcof "noisily randregret choice ,  positive( tt tt_collinear  )  altern(altern) gr(obs) rrm(pure) iter(0)  " == 0
+{res}
+{txt}PRRM: Pure Random Regret Minimization Model
+
+Case ID variable: obs{col 48}Number of cases{col 67}= {res}      1060
+{txt}Alternative variable: altern{col 48}Number of obs{col 67}= {res}      3180
+{txt}{col 48}Wald chi2(1){col 67}= {res}      0.13
+{txt}Log likelihood = {res}-1152.8156{col 48}{txt}{col 48}Prob > chi2{col 67}= {res}    0.7224
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      choice{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}choice       {txt}{c |}
+{space 10}tt {c |}{col 14}{res}{space 2} .0017584{col 26}{space 2} .0049491{col 37}{space 1}    0.36{col 46}{space 3}0.722{col 54}{space 4}-.0079417{col 67}{space 3} .0114584
+{txt}tt_collinear {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 7}ASC_2 {c |}{col 14}{res}{space 2}-.2004254{col 26}{space 2} .0735413{col 37}{space 1}   -2.73{col 46}{space 3}0.006{col 54}{space 4}-.3445637{col 67}{space 3}-.0562871
+{txt}{space 7}ASC_3 {c |}{col 14}{res}{space 2} .1677102{col 26}{space 2} .0795043{col 37}{space 1}    2.11{col 46}{space 3}0.035{col 54}{space 4} .0118848{col 67}{space 3} .3235357
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+The Pure-RRM uses a transformation of the original regressors using options
+positive() and negative() as detailed in {browse "https://www.sciencedirect.com/science/article/pii/S0965856415000166":S. van Cranenburgh et. al (2015)}
+Afterward, randregret invokes clogit using these transormed regresors
+{hline 78}
+
+{com}. 
 . 
 . 
 . 

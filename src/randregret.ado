@@ -1,22 +1,26 @@
-*! version 1.0.0  11Sep2020
+*! version 1.1.0  24Dec2020
 *! [aut & dev] 	Álvaro A. Gutiérrez Vargas
 *! [aut] 		Michel Meulders
 *! [aut] 		Martina Vandebroek 
 
-/***********************************************************
+*  1.1.0:  	-randregret- can deal with omitted regressors when using 
+*			cluster or robust standard errors. 
+
+/******************************************************************
    ___   ____          __    ___   ___  __   ___   ___  ____
   /__/  ____/  /\  /  /  \  /__/  /__  / _  /__/  /__    /
  /  \  /___/  /  \/  /___/ /  \  /__  /__/ /  \  /__    /   
 
- 
- V.1.0:  d0 ml evaluator that run the following RRM models:
+ version 1.1.1:  d0 ml evaluator that run the following RRM models:
 		
-		->RRM      (Chorus, 2010)
-		->muRRM    (S. Van Cranenburgh et.al, 2015)
-		->pure-RRM (S. Van Cranenburgh et.al, 2015)
-		->G-RRM    (Chorus, 2014)	
-		
-************************************************************/
+	-> RRM      (Chorus, 2010)
+	-> muRRM    (S. Van Cranenburgh et.al, 2015)
+	-> pure-RRM (S. Van Cranenburgh et.al, 2015)
+	-> G-RRM    (Chorus, 2014)	
+	
+******************************************************************/
+
+
 
 program randregret 
 	version 12
@@ -124,6 +128,7 @@ program Estimate, eclass sortpreserve
 			exit 459		
 		}
 	}	
+	
 	// Check that the dependent variable only takes values 0-1 //
 	capture assert `lhs' == 0 | `lhs' == 1
 	if (_rc != 0) {
@@ -131,15 +136,36 @@ program Estimate, eclass sortpreserve
 		exit 450		
 	}
 	// Check that each group has only one chosen alternative //
+	
 	tempvar chonum
 	sort `group'
 	qui by `group': egen `chonum' = sum(`lhs')
-	capture assert `chonum' == 1
+		capture assert `chonum' == 1
 	if (_rc != 0) {
-		di in red "At least one group has more than one chosen alternative"
+		di in red "At least one group has either more than one chosen alternative or none"
 		exit 498		
 	}
+		
+	// Check that the response variable is not included also as an independent 
+	// variable. I know this check is awkward, but it happened to a user once,
+	// and given that the program initialized without errors, the output of this
+	// typo is simply an algorithm that keeps running without converging. 
+	
+	local k1 : word count `rhs' 
+	local k2 : word count `lhs' 
+		forvalues i = 1(1)`k1' {
+			forvalues j = 1(1)`k2' {
+				local w1 : word `i' of `rhs' 
+				local w2 : word `j' of `lhs'
+				if ("`w1'" == "`w2'") {
+					di in red "The variable `w1' is specified both as response variable and as regressor."
+					exit 498
+				} 	
+			}
+		}						
 	restore
+	
+
 	
 	
 	
@@ -240,13 +266,74 @@ if "`rrmfn'" == "pure" {
 		exit 198
 	}
 	
+	
+	// Check that no variables have been specified to have both positive and negative coefficients
+	local k1 : word count `positive'
+	local k2 : word count `negative' 
+	forvalues i = 1(1)`k1' {
+		forvalues j = 1(1)`k2' {
+			local w1 : word `i' of `positive' 
+			local w2 : word `j' of `negative'
+			if ("`w1'" == "`w2'") {
+				di in red "The variable `w1' is specified to have both positive and negative coefficients."
+				exit 498
+			} 	
+		}
+	}
+    // Check that no variables have been specified twice in positive() option.
+	local k1 : word count `positive'
+	forvalues i = 1(1)`k1' {
+		forvalues j = 1(1)`k1' {
+			if `i' != `j' {
+				local w1 : word `i' of `positive' 
+				local w2 : word `j' of `positive'
+				if ("`w1'" == "`w2'") {
+					di in red "The variable `w1' is specified twice in positive() option."
+					exit 498
+				} 
+			}
+		}
+	}
+    // Check that no variables have been specified twice in negative() option.
+	local k1 : word count `negative'
+	forvalues i = 1(1)`k1' {
+		forvalues j = 1(1)`k1' {
+			if `i' != `j' {
+				local w1 : word `i' of `negative' 
+				local w2 : word `j' of `negative'
+				if ("`w1'" == "`w2'") {
+					di in red "The variable `w1' is specified twice in negative() option."
+					exit 498
+				} 
+			}
+		}
+	}
+
+	// Check that no variables have been specified to have both positive and negative coefficients
+	
+	local pos_and_negative `positive' `negative'
+	local k1 : word count `pos_and_negative'
+	local k2 : word count  `lhs'
+	forvalues i = 1(1)`k1' {
+		forvalues j = 1(1)`k2' {
+			local w1 : word `i' of `pos_and_negative' 
+			local w2 : word `j' of `lhs'
+			if ("`w1'" == "`w2'") {
+				di in red "The variable `w1' has been used as dependent variable and explanatory variable inside positive() or negative()."
+				exit 498
+			} 	
+		}
+	}	
+	
 	preserve 
 	qui keep if `touse'==1
 	tempvar prefix _temp
 
+	
 	capture  randregret_pure `positive' if `touse', gr(`group')  sign(pos) prefix(`prefix') 
 	capture  randregret_pure `negative' if `touse', gr(`group')  sign(neg) prefix(`prefix')
 
+	
 	loc old_covars `positive' `negative'
 	foreach k in `old_covars' {
 		local pure_covars "`pure_covars' `prefix'`k'"
@@ -265,7 +352,8 @@ if "`rrmfn'" == "pure" {
 		foreach k of varlist `ASC_'* {
 			// Reverse sign of ASC
 			qui replace `k' = -`k' 
-			}		
+			}
+
 		qui clogit `lhs' `old_covars' `ASC_'*   if `touse' ,group(`group') ///
 											from(`from') `robust' `vce_cluster'
 	}
@@ -501,7 +589,6 @@ else if  "`rrmfn'" == "gene" {
 				maximize
 
 
-				
 	// vector of estimates				
 	tempname b_all 
 	matrix `b_all' = e(b)
@@ -521,18 +608,150 @@ else if  "`rrmfn'" == "gene" {
 			matrix colnames `b_all' = `newnames'
 		}
 	}
+	
+    // -------------------------------------------------------------------- //
+	// The following prevents the `std_errs()` mata routine from running    //			
+	// into errors when there are omitted variables because of collinearity.//
+	// This routine only keeps the parameters that were not omitted.        //
+	// When no omitted variables are found this routine is innocuous.       //
+    // -------------------------------------------------------------------- //				
+	if ("`cluster'" != "") | ("`robust'" !=""){
+		// ---------------------------------------- //
+		//--- First working with the e(b) object ---//
+		// ---------------------------------------- //
+		
+		// Extracting the full_name of the parameters with corrected names. 
+		local colfullnames_b: colnames `b_all'
+
+		// Keeping only coefficients of non-omitted variables in `non_omitted'
+		foreach i in `colfullnames_b' {
+			local first_two = substr("`i'",1,2)
+			if "`first_two'" != "o."{
+				local non_omitted  `non_omitted'  `i'
+				}		
+			}
+		// Intersection between the non-omitted and the included regressors.		
+		local inter: list rhs & non_omitted		
+		// Replace the rhs object with only non-omitted regressors. 
+		local rhs `inter'
+		*di "`rhs'"		
+			
+		// Getting the row name of the e(b) object [a.k.a. dependent variable]		
+		local rownames_b: rownames `b_all'
+		// Getting the number of non-omitted variables 
+		local n_non_omitted : word count `non_omitted'
+	
+	    // Getting the column equations 
+		local coleq: coleq `b_all'
+
+		// setting counter for indexing purposes
+		local counter = 1
+		//generating a matrix (b_non_omitted) to store the parameters
+ 		tempname b_non_omitted
+		
+		matrix `b_non_omitted' = J(1,`n_non_omitted',.)
+		local counter = 1
+		foreach i in `non_omitted' {
+			// get the column number of the variable "`i'" 
+		    local col_var_i = colnumb(`b_all',"`i'")
+			// get the equation NAME of the variable "`i'". 
+			local eq_name : word `col_var_i' of `coleq'
+			// Store the equations names of non-omitted variables.
+			local non_omitted_equations_names  `non_omitted_equations_names' `eq_name'
+			// Allocating non-omitted parameter values into `b_non_omitted'.
+			matrix `b_non_omitted'[1, `counter']  = `b_all'[1,`col_var_i']
+			local counter=`counter'+1
+		}
+
+		// colnames, rownames and eq names of matrix with non-omitted covariates
+		matrix colnames `b_non_omitted' = `non_omitted'
+		matrix coleq    `b_non_omitted' = `non_omitted_equations_names'
+		matrix rownames `b_non_omitted' = `rownames_b' 
+		
+		// ------------------------------------------ //
+		//--- Second: working with the e(V) object ---//
+		// ------------------------------------------ //
+		tempname V V_non_omitted  
+		mat `V' = e(V)
+		// Extracting the full_name of the columns
+		local colfullnames_V: colnames `V'
+
+		// Keeping only coefficients of non-omitted variables
+		foreach i in `colfullnames_V' {
+			local first_two = substr("`i'",1,2)
+			if "`first_two'" != "o."{
+				local non_omitted_V  `non_omitted_V'  `i'
+				}		
+			}
+		
+		// Getting the number of non-omitted variables 
+		local n_non_omitted_V : word count `non_omitted_V'
+		// Matrix to store non-omitted var-covars. 
+		matrix `V_non_omitted'  = J(`n_non_omitted_V',`n_non_omitted_V',.)
+        // Allocating non-omitted var-covars.
+		loc counter_i = 1
+		foreach i in `non_omitted_V' {
+			loc counter_j = 1
+			foreach j in `non_omitted_V' {
+                // colnum of variable `j'
+				local col_var_j = colnumb(`V',"`j'")
+				// rownum of variable `i'
+				local row_var_i = rownumb(`V',"`i'")
+				// Allocate non-omitted var/covariances into `V_non_omitted'.
+				matrix `V_non_omitted'[`counter_i', `counter_j']  = `V'[`row_var_i',`col_var_j']
+				local counter_j = `counter_j' + 1
+			}
+		local counter_i = `counter_i' + 1
+		}
+		// col/rownames of `V_non_omitted'
+		matrix colnames `V_non_omitted' = `non_omitted'
+		matrix rownames `V_non_omitted' = `non_omitted'
+		matrix coleq    `V_non_omitted' = `non_omitted_equations_names'
+		matrix roweq    `V_non_omitted' = `non_omitted_equations_names'
+
+		
+     // Summary of the created matrices  //		
+ 	 // ---------------+---------------+-----------------+
+	 //  Matrix        | has omitted ? |  correct names? |
+     // ---------------+---------------+-----------------+
+	 // `b_all'        |       YES     |       YES       |
+	 // ---------------+---------------+-----------------+
+	 // `b_non_omitted'|       NO      |       YES       |
+	 // ---------------+---------------+-----------------+
+	 // `V'            |       YES     |       NO        |
+ 	 // ---------------+---------------+-----------------+
+	 // `V_non_omitted'|       NO      |       YES       |
+	 // ---------------+---------------+-----------------+
+	 
+	}
+				
+	
 	// Utilities for robust/cluster standard errors.
 	if ("`cluster'" != "") | ("`robust'" !=""){
 		tempname ASC_hat b_hat aux_star_hat 		
+		
+		
 		// Parsing parameter vector
 		if "${cons_demanded}" =="NO"{ 
 			if ("`rrmfn'" == "classic") {
-				matrix `b_hat' = `b_all' 	
+				*matrix `b_hat' = `b_all'
+				matrix `b_hat' = `b_non_omitted'
 			} 
-			else if ("`rrmfn'" == "gene") | ("`rrmfn'" == "mu") {
-				matrix `b_hat' = `b_all'[1,1..`e(rank)'-1]
-				matrix `aux_star_hat' = `b_all'[1,`e(rank)'..`e(rank)']
+			else if ("`rrmfn'" == "gene")  {
+				*matrix `b_hat' = `b_all'[1,1..`e(rank)'-1]
+				matrix `b_hat' = `b_non_omitted'[1,"RRM:"]
+				
+				*matrix `aux_star_hat' = `b_all'[1,`e(rank)'..`e(rank)']
+				matrix `aux_star_hat' = `b_non_omitted'[1,"gamma_star:"]
 			}
+			else if ("`rrmfn'" == "mu") {
+				*matrix `b_hat' = `b_all'[1,1..`e(rank)'-1]
+				matrix `b_hat' = `b_non_omitted'[1,"RRM:"]
+				
+				*matrix `aux_star_hat' = `b_all'[1,`e(rank)'..`e(rank)']
+				matrix `aux_star_hat' = `b_non_omitted'[1,"mu_star:"]
+			}			
+			
 		}
 		else if "${cons_demanded}" =="YES"{
 			qui tab `alternatives' 
@@ -541,14 +760,31 @@ else if  "`rrmfn'" == "gene" {
 				matrix `b_hat' 	 = `b_all'[1,1..(`e(rank)'-`n_altern')+1] 		 
 				matrix `ASC_hat' = `b_all'[1,`e(rank)'-(`n_altern'-2)..`e(rank)']
 			}
-			else if ("`rrmfn'" == "gene") | ("`rrmfn'" == "mu") {
-				matrix `b_hat' 	 = `b_all'[1,1..(`e(rank)'-`n_altern')] 		 
-				matrix `ASC_hat' = `b_all'[1,`e(rank)'-(`n_altern'-1)..`e(rank)'-1]    
-				matrix `aux_star_hat' = `b_all'[1,`e(rank)'..`e(rank)']
+			else if ("`rrmfn'" == "gene")  {
+				*matrix `b_hat' 	 = `b_all'[1,1..(`e(rank)'-`n_altern')] 		 
+				matrix `b_hat' 	 = `b_non_omitted'[1,"RRM:"] 		 
+							
+				*matrix `ASC_hat' = `b_all'[1,`e(rank)'-(`n_altern'-1)..`e(rank)'-1]    
+				matrix `ASC_hat' = `b_non_omitted'[1,"ASC:"]    
+				
+				matrix `aux_star_hat' = `b_non_omitted'[1,"gamma_star:"]
 			}
+			else if ("`rrmfn'" == "mu") {
+				*matrix `b_hat' 	 = `b_all'[1,1..(`e(rank)'-`n_altern')] 		 
+				matrix `b_hat' 	 = `b_non_omitted'[1,"RRM:"] 		 
+							
+				*matrix `ASC_hat' = `b_all'[1,`e(rank)'-(`n_altern'-1)..`e(rank)'-1]    
+				matrix `ASC_hat' = `b_non_omitted'[1,"ASC:"]    
+				
+				matrix `aux_star_hat' = `b_non_omitted'[1,"mu_star:"]
+			}			
+			
 		}
+		
+		
+		// Ingredients for std_errs() mata function.
 		tempname D
-		matrix `D' = e(V)	
+		matrix `D' = `V_non_omitted'
 		mata: D = st_matrix("`D'")		
 		mata: ASC_hat = st_matrix("`ASC_hat'")
 		mata: b_hat = st_matrix("`b_hat'")
@@ -560,17 +796,76 @@ else if  "`rrmfn'" == "gene" {
 		capture mata: st_view(ASC = ., ., "`ASC_'*", "`touse'") 		
 		mata: st_view(panvar=., ., "`group'", "`touse'")
 
-		tempname V_r	
+		// Computing robust/cluster variance covariance matrix.
+		tempname V_r
 		mata: st_matrix("`V_r'", std_errs(D,Y,X,ASC,panvar))
-		ereturn repost b=`b_all' V=`V_r',  rename
+		// colnames of non-omitted to the robust/cluster var covars
+
+		*Getting the row name of the non-omitted var-covar matrix
+		local rownames_D: rownames `D'
+		local colnames_D: colnames `D'
+		local roweq_D   : roweq `D'
+		local coleq_D   : coleq `D'
+		
+		// Allocating to the robust/cluster var covar matrix
+		matrix rownames `V_r' = `rownames_D'	
+		matrix colnames `V_r' = `colnames_D'
+		matrix roweq    `V_r' = `roweq_D'
+		matrix coleq    `V_r' = `coleq_D'
+		
+
+		// Below we put back the robust variance covariance matrix in the //
+		// needed format for displaying it. Meaning `V_r' values into `V' //
+		
+		loc col_names : colnames  `V_r' 
+		loc row_names : rownames  `V_r' 
+
+		loc eq_original_V_ok_names : coleq  `b_all' 
+		loc col_original_V_ok_names : colnames  `b_all' 
+
+		// Correctly col/row-name `V' [works bc  matrix is symmetric] 
+		matrix rownames `V' = `col_original_V_ok_names'	
+		matrix colnames `V' = `col_original_V_ok_names'
+		matrix roweq    `V' = `eq_original_V_ok_names'
+		matrix coleq    `V' = `eq_original_V_ok_names'		
+		
+		*Put back the std error where they belong 
+		foreach i in `row_names' {
+			foreach j in `col_names' {	
+				*recovers rownum  of variable `i'
+				local row_var_i = rownumb(`V',"`i'")
+				*recover the number of the equation of row i 
+				local row_eq_name : word `row_var_i' of `eq_original_V_ok_names'
+				*recovers colnum  of variable `j'
+				local col_var_j = colnumb(`V',"`j'")	
+				*recover the number of the equation of column j 
+				local col_eq_name : word `col_var_j' of `eq_original_V_ok_names'
+				*replace the robust values in the original var-covar.
+				matrix `V'[`row_var_i', `col_var_j'] = `V_r'["`row_eq_name':`i'", "`col_eq_name':`j'"]
+			}
+		}
+	
+		*ereturn repost b=`b_all' V=`V_r',  rename
+		ereturn repost b=`b_all' V=`V',  rename
 		ereturn local vcetype Robust
+
+		// Summary of the created matrices  //		
+		// ---------------+---------------+-----------------+
+		//  Matrix        | has omitted ? |  correct names? |
+		// ---------------+---------------+-----------------+
+        // `b_all'        |      YES      |       YES       |
+		// ---------------+---------------+-----------------+
+		// `V'            |      YES      |       YES       |
+		// ---------------+---------------+-----------------+
+		// `V_r' (robust) |      NO       |       YES       |
+	    // ---------------+---------------+-----------------+
+		
 		if ("`cluster'" != "") ereturn scalar n_clusters = __n_clusters
 	}
 	else{
 		ereturn repost b=`b_all' ,  rename
 	}
 
-	
 	tempname fitted_model
 	qui estimate store `fitted_model'
 	// saving coef and sd error of ancilliary params in original scale. 
@@ -724,8 +1019,7 @@ program define _lrtest_gene, sclass
 		
 end
 
-// include mata functions from randregret_LL.mata
+// include mata functions from randregret.mata
 findfile "randregret.mata"
-capture do "`r(fn)'"
-
+do "`r(fn)'"
 exit

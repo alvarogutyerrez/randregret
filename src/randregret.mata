@@ -3,6 +3,8 @@
 *! [aut] 		Michel Meulders
 *! [aut] 		Martina Vandebroek 
 
+
+mata: mata set matastrict off 
 mata:
 	void randregret_LL(transmorphic scalar M, real scalar todo,
 	real rowvector b, real scalar lnf,
@@ -295,7 +297,7 @@ real matrix std_errs(real matrix 	D,
 	external gamma_star_hat
 	external D
 	external cluster_var_mata
-	
+
 	// st_numscalar("r(unique_value)")
  
 	cluster_option	= st_global("cluster_mata")
@@ -303,7 +305,7 @@ real matrix std_errs(real matrix 	D,
 	rrmfn			= st_global("regret_fn") 	
 	upmu 			= strtoreal(st_global("uppermu")) 	
 	
-	
+
 
 	// id each choice situation
 	paninfo = panelsetup(panvar, 1)     

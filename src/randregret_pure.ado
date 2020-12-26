@@ -25,6 +25,8 @@ program  randregret_pure, eclass
 			}
 		}
 
+
+		
 		*Cheking signbeta option
 		if ("`signbeta'" != "pos") & ("`signbeta'" != "neg") {
 			di as r "option signbeta() misspecified. Only 'pos' and 'neg' options are allowed"
