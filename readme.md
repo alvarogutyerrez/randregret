@@ -21,7 +21,7 @@
 ```
 
 
-Here we describe the ```randregret``` command, which implements a variety of Random Regret Minimization (RRM) models. The command allows the user to apply the classic RRM model introduced in Chorus (2010), the Generalized RRM model introduced in Chorus (2014), and also the muRRM and Pure RRM models, both introduced in van Cranenburgh (2015). We illustrate the usage of the ```randregret``` command using stated choice data on route preferences using data from van Cranenburgh (2018). The command offers robust and cluster standard error correction using analytical expressions of the scores functions. It also offers likelihood ratio tests that can be used to assess the relevance of a given model specification. Finally, users can obtain the predicted probabilities from each model using the ```randregretpred``` command.
+Here we describe the ```randregret``` command (forthcoming at [The Stata Journal](https://www.stata-journal.com/)), which implements a variety of Random Regret Minimization (RRM) models. The command allows the user to apply the classic RRM model introduced in Chorus (2010), the Generalized RRM model introduced in Chorus (2014), and also the muRRM and Pure RRM models, both introduced in van Cranenburgh (2015). We illustrate the usage of the ```randregret``` command using stated choice data on route preferences using data from van Cranenburgh (2018). The command offers robust and cluster standard error correction using analytical expressions of the scores functions. It also offers likelihood ratio tests that can be used to assess the relevance of a given model specification. Finally, users can obtain the predicted probabilities from each model using the ```randregretpred``` command.
 
 ```keywords```: randregret, randregret_pure, randregretpred, discrete choice models,  semi-compensatory behavior, random utility maximization, random regret minimization.
 
@@ -52,7 +52,7 @@ cap ado uninstall randregret
 net install randregret, from("https://raw.githubusercontent.com/alvarogutyerrez/randregret/master/src/")
 
 // Data download
-scalar server = "https://data.4tu.nl/ndownloader/"
+scalar server = "https://data.4tu.nl/ndownloader/"  
 scalar doi = "files/24015353"
 import delimited   "`=server + doi'" ,clear
 keep obs id cs  tt1 tc1 tt2 tc2 tt3 tc3 choice 
@@ -81,6 +81,9 @@ randregret choice  tc tt , gr(obs) alt(altern) rrmfn(gene) cluster(id) show noco
 randregret choice  , neg(tc tt) gr(obs) alt(altern) rrmfn(pure) cluster(id) nocons     
 ```
 
+### Documentation 
+
+The full documentation/working paper of the command can be found [here](https://www.dropbox.com/s/3ke1x3syjtmrdtg/randregret_WP.pdf?dl=0)!
 
 ### Conferences
 
