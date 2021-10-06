@@ -21,7 +21,7 @@
 ```
 
 
-Here we describe the ```randregret``` command (forthcoming at [The Stata Journal](https://www.stata-journal.com/)), which implements a variety of Random Regret Minimization (RRM) models. The command allows the user to apply the classic RRM model introduced in Chorus (2010), the Generalized RRM model introduced in Chorus (2014), and also the muRRM and Pure RRM models, both introduced in van Cranenburgh (2015). We illustrate the usage of the ```randregret``` command using stated choice data on route preferences using data from van Cranenburgh (2018). The command offers robust and cluster standard error correction using analytical expressions of the scores functions. It also offers likelihood ratio tests that can be used to assess the relevance of a given model specification. Finally, users can obtain the predicted probabilities from each model using the ```randregretpred``` command.
+Here we describe the ```randregret``` command (published at [The Stata Journal](https://journals.sagepub.com/doi/full/10.1177/1536867X211045538)), which implements a variety of Random Regret Minimization (RRM) models. The command allows the user to apply the classic RRM model introduced in Chorus (2010), the Generalized RRM model introduced in Chorus (2014), and also the muRRM and Pure RRM models, both introduced in van Cranenburgh (2015). We illustrate the usage of the ```randregret``` command using stated choice data on route preferences using data from van Cranenburgh (2018). The command offers robust and cluster standard error correction using analytical expressions of the scores functions. It also offers likelihood ratio tests that can be used to assess the relevance of a given model specification. Finally, users can obtain the predicted probabilities from each model using the ```randregretpred``` command.
 
 ```keywords```: randregret, randregret_pure, randregretpred, discrete choice models,  semi-compensatory behavior, random utility maximization, random regret minimization.
 
@@ -83,7 +83,7 @@ randregret choice  , neg(tc tt) gr(obs) alt(altern) rrmfn(pure) cluster(id) noco
 
 ### Documentation 
 
-The full documentation/working paper of the command can be found [here](https://www.dropbox.com/s/3ke1x3syjtmrdtg/randregret_WP.pdf?dl=0)!
+The article that documents the command can be found [here](https://journals.sagepub.com/doi/full/10.1177/1536867X211045538)!
 
 ### Conferences
 
@@ -97,22 +97,17 @@ The full documentation/working paper of the command can be found [here](https://
 Professor [Sander van Cranenburgh](https://www.tudelft.nl/en/tpm/about-the-faculty/departments/engineering-systems-and-services/people/assistant-professors/drir-s-sander-van-cranenburgh/) has a [website](https://www.advancedrrmmodels.com/) where you can find additional information about RRM models together with routines in other languages to fit them (R, Python, and Matlab included). A dofile that replicated professor Sander's results can be found [here](https://github.com/alvarogutyerrez/randregret/blob/master/examples/randregret_replication_Sanders_routines.do).  
 
 
-
-
-
-
-
 ### References 
 
 > * Chorus. C. 2010.  A New Model of Random Regret Minimization.  European Journal of Transport and Infrastructure Research 10: pp. 181-196.
 
-> *    Chorus. C. 2013.  A Generalized Random Regret Minimization model.  Transportation Research Part B: Methodological 68: pp. 224-238.
+> * Chorus. C. 2013.  A Generalized Random Regret Minimization model.  Transportation Research Part B: Methodological 68: pp. 224-238.
 
-> *    Van Cranenburgh S., C.A. Guevara and C.G. Chorus 2015.  New insights on random regret minimization models.  Transportation Research Part A: Policy and Practice 74: pp. 91-109.
+> * Van Cranenburgh S., C.A. Guevara and C.G. Chorus 2015.  New insights on random regret minimization models.  Transportation Research Part A: Policy and Practice 74: pp. 91-109.
 
-> *    Van Cranenburgh S. and Alwosheel A. 2019.  An artificial neural network based approach to investigate travellers’ decision rules.  Transportation Research Part C: Emerging Technologies 98: pp. 152-166.
+> * Van Cranenburgh S. and Alwosheel A. 2019.  An artificial neural network based approach to investigate travellers’ decision rules.  Transportation Research Part C: Emerging Technologies 98: pp. 152-166.
 
-> *    Van Cranenburgh, S. 2018.  Small value-of-time experiment, Netherlands. 4TU.Centre for Research Data. Dataset.
+> * Van Cranenburgh, S. 2018.  Small value-of-time experiment, Netherlands. 4TU.Centre for Research Data. Dataset.
 
 
 
